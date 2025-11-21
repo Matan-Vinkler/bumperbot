@@ -1,0 +1,61 @@
+# Top-level colcon/ROS2 build artifacts
+build/
+install/
+log/
+
+# Colcon/ROS cache
+.colcon/
+.colcon_cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# ament/ROS python packaging artifacts
+*.egg-info/
+
+# C/C++ / build files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.so
+*.a
+*.elf
+
+# ROS specific
+.ros/
+.rosinstall
+.ros2/
+*.bag
+*.bag.*
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Tests/coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Misc
+*.log
+.cache/
+.mypy_cache/
+.pyright/
