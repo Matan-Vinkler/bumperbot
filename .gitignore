@@ -59,3 +59,5 @@ htmlcov/
 .cache/
 .mypy_cache/
 .pyright/
+*.gv
+*.pdf
