@@ -5,6 +5,7 @@ from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import Node
 
 def noisy_controller_func(context, *args, **kwargs):
+    use_sim_time = LaunchConfiguration("use_sim_time")
     wheel_radius = float(LaunchConfiguration("wheel_radius").perform(context))
     wheel_separation = float(LaunchConfiguration("wheel_separation").perform(context))
     wheel_radius_error = float(LaunchConfiguration("wheel_radius_error").perform(context))
@@ -17,6 +18,7 @@ def noisy_controller_func(context, *args, **kwargs):
         parameters=[{
             "wheel_radius": wheel_radius + wheel_radius_error,
             "wheel_separation": wheel_separation + wheel_separation_error,
+            "use_sim_time": use_sim_time
         }],
         condition=IfCondition(use_python)
     )
@@ -26,6 +28,7 @@ def noisy_controller_func(context, *args, **kwargs):
         parameters=[{
             "wheel_radius": wheel_radius + wheel_radius_error,
             "wheel_separation": wheel_separation + wheel_separation_error,
+            "use_sim_time": use_sim_time
         }],
         condition=UnlessCondition(use_python)
     )
@@ -36,6 +39,11 @@ def noisy_controller_func(context, *args, **kwargs):
     ]
 
 def generate_launch_description():
+    use_sim_time_arg = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="True"
+    )
+
     use_python_arg = DeclareLaunchArgument(
         "use_python",
         default_value="False"
@@ -66,6 +74,7 @@ def generate_launch_description():
         default_value="0.02"
     )
 
+    use_sim_time = LaunchConfiguration("use_sim_time")
     use_python = LaunchConfiguration("use_python")
     wheel_radius = LaunchConfiguration("wheel_radius")
     wheel_separation = LaunchConfiguration("wheel_separation")
@@ -108,14 +117,14 @@ def generate_launch_description():
             Node(
                 package="bumperbot_controller",
                 executable="simple_controller.py",
-                parameters=[{"wheel_radius": wheel_radius, "wheel_separation": wheel_separation}],
+                parameters=[{"wheel_radius": wheel_radius, "wheel_separation": wheel_separation, "use_sim_time": use_sim_time}],
                 condition=IfCondition(use_python)
             ),
 
             Node(
                 package="bumperbot_controller",
                 executable="simple_controller",
-                parameters=[{"wheel_radius": wheel_radius, "wheel_separation": wheel_separation}],
+                parameters=[{"wheel_radius": wheel_radius, "wheel_separation": wheel_separation, "use_sim_time": use_sim_time}],
                 condition=UnlessCondition(use_python)
             )
         ]
@@ -124,6 +133,7 @@ def generate_launch_description():
     noisy_controller_launch = OpaqueFunction(function=noisy_controller_func)
 
     return LaunchDescription([
+        use_sim_time_arg,
         use_python_arg,
         wheel_radius_arg,
         wheel_separation_arg,
