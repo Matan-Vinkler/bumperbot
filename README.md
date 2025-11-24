@@ -20,7 +20,7 @@ source install/setup.bash
 ```
 - Run a bringup or controller launch, for example:
 ```bash
-ros2 launch bumperbot_bringup simulated_robot.launch.py
+ros2 launch bumperbot_bringup simulated_robot.launch.py world_name:=small_house
 ```
 
 ## Project Structure
@@ -60,11 +60,6 @@ Top-level `src/` contains the following packages:
 
 - `bumperbot_utils` (ament_cmake)
   - Purpose: Utility libraries, helper nodes, and tools shared across the bumperbot packages.
-
-## Development Notes
-
-- Package manifests (`package.xml`) include the MIT license entry. If you want a full license file at the workspace root, I can add a `LICENSE` file containing the MIT text.
-- Most packages are `ament_cmake` projects and are built with `colcon build`. The Python examples use `ament_python` and will be installed into the workspace during build.
 
 ## Running and Testing
 
