@@ -61,6 +61,10 @@ Top-level `src/` contains the following packages:
 - `bumperbot_utils` (ament_cmake)
   - Purpose: Utility libraries, helper nodes, and tools shared across the bumperbot packages.
 
+- `bumperbot_planning` (ament_cmake)
+  - Purpose: Provides planning and trajectory generation nodes and utilities for high-level path planning and motion execution.
+  - Notes: Implements planners and helper interfaces to integrate with controllers and navigation stacks.
+
 ## Running and Testing
 
 - To run a single package's launch file, source the workspace and call `ros2 launch <package> <launchfile>` as shown above.

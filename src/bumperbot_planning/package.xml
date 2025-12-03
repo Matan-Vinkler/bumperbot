@@ -3,7 +3,7 @@
 <package format="3">
   <name>bumperbot_planning</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Provides planning and trajectory generation nodes and utilities for high-level path planning and motion execution.</description>
   <maintainer email="matanvinkler@gmail.com">matan</maintainer>
   <license>MIT</license>
 
