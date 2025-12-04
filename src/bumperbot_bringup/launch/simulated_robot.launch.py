@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     use_slam_arg = DeclareLaunchArgument(
         "use_slam",
-        default_value="true"
+        default_value="false"
     )
 
     use_slam = LaunchConfiguration("use_slam")
