@@ -65,6 +65,10 @@ Top-level `src/` contains the following packages:
   - Purpose: Provides planning and trajectory generation nodes and utilities for high-level path planning and motion execution.
   - Notes: Implements planners and helper interfaces to integrate with controllers and navigation stacks.
 
+- `bumperbot_motion` (ament_cmake)
+  - Purpose: Motion layer utilities, trajectory followers, and controller interfaces for executing planned trajectories.
+  - Notes: Bridges high-level planners with low-level controllers and includes helpers for smoothing and tracking trajectories.
+
 ## Running and Testing
 
 - To run a single package's launch file, source the workspace and call `ros2 launch <package> <launchfile>` as shown above.
