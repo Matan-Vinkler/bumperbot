@@ -36,8 +36,16 @@ namespace bumperbot_motion
 
         nav_msgs::msg::Path::SharedPtr global_plan_;
 
+        double prev_linear_error_;
+        double prev_angular_error_;
+        rclcpp::Time last_cycle_time_;
+
         void pathCallback(const nav_msgs::msg::Path::SharedPtr path_msg);
         void controlLoop();
+        bool transformPlan(const std::string& frame);
+        geometry_msgs::msg::PoseStamped getNextPose(const geometry_msgs::msg::PoseStamped& robot_pose);
+
+        double get_poses_distance(const geometry_msgs::msg::PoseStamped& pose1, const geometry_msgs::msg::PoseStamped& pose2) const;
     };
 }
 
