@@ -46,7 +46,7 @@ class PDMotionPlanner(Node):
         self.global_plan_ = path_msg
 
     def controlLoop(self):
-        if not (self.global_plan_) or (not self.global_plan_.poses):
+        if (not self.global_plan_) or (not self.global_plan_.poses):
             return
         
         try:
