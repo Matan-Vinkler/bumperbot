@@ -25,7 +25,7 @@ namespace bumperbot_motion
 
         path_sub_ = create_subscription<nav_msgs::msg::Path>("/a_star/path", 10, std::bind(&PDMotionPlanner::pathCallback, this, std::placeholders::_1));
         cmd_pub_ = create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
-        next_pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("/pd_next_pose", 10);
+        next_pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("/pd/next_pose", 10);
 
         timer_ = create_wall_timer(std::chrono::milliseconds(100), std::bind(&PDMotionPlanner::controlLoop, this));
 
