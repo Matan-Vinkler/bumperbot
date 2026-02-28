@@ -16,7 +16,7 @@ namespace bumperbot_planning
 
         rclcpp::QoS map_qos(10);
         map_qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-        map_sub_ = create_subscription<nav_msgs::msg::OccupancyGrid>("/map", map_qos, std::bind(&DijkstraPlanner::mapCallback, this, _1));
+        map_sub_ = create_subscription<nav_msgs::msg::OccupancyGrid>("/costmap/costmap", map_qos, std::bind(&DijkstraPlanner::mapCallback, this, _1));
         pose_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>("/goal_pose", 10, std::bind(&DijkstraPlanner::goalCallback, this, _1));
         path_pub_ = create_publisher<nav_msgs::msg::Path>("/dijkstra/path", 10);
         map_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>("/dijkstra/visited_map", 10);
@@ -91,9 +91,10 @@ namespace bumperbot_planning
             for(const auto& dir: explore_directions)
             {
                 GraphNode new_node = active_node + dir;
-                if(std::find(visited_nodes.begin(), visited_nodes.end(), new_node) == visited_nodes.end() && poseOnMap(new_node) && map_->data.at(pose2Cell(new_node)) == 0)
+                int current_cost = map_->data.at(pose2Cell(new_node));
+                if(std::find(visited_nodes.begin(), visited_nodes.end(), new_node) == visited_nodes.end() && poseOnMap(new_node) && current_cost >= 0 && current_cost < 99)
                 {
-                    new_node.cost = active_node.cost + 1;
+                    new_node.cost = active_node.cost + current_cost + 1;
                     new_node.prev = std::make_shared<GraphNode>(active_node);
 
                     pending_nodes.push(new_node);
