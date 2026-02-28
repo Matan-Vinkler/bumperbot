@@ -27,45 +27,49 @@ ros2 launch bumperbot_bringup simulated_robot.launch.py world_name:=small_house
 
 Top-level `src/` contains the following packages:
 
-- `bumperbot_bringup` (ament_cmake)
+- `bumperbot_bringup`
   - Purpose: Launches and configures the core robot systems and launch files required to bring the robot up.
   - Notes: Contains top-level launch files for simulation and bring-up.
 
-- `bumperbot_controller` (ament_cmake)
+- `bumperbot_controller`
   - Purpose: Contains controller implementations, launch files, and integration for running the robot's control stack.
   - Notes: Provides both C++ and Python controllers, configuration files for controllers, and joystick teleop integration.
 
-- `bumperbot_mapping` (ament_cmake)
+- `bumperbot_mapping`
   - Purpose: Provides mapping nodes and utilities for building and serving environment maps using the robot's sensors.
 
-- `bumperbot_localization` (ament_cmake)
+- `bumperbot_localization`
   - Purpose: Provides localization and state-estimation configuration and nodes for accurate robot pose tracking.
   - Notes: Integrates with `robot_localization` and Nav2 lifecycle components where applicable.
 
-- `bumperbot_description` (ament_cmake)
+- `bumperbot_navigation`
+  - Purpose: Provides navigation stack for autonomous path planning and obstacle avoidance using Nav2.
+  - Notes: Includes costmap configuration, planners (Dijkstra and A*), trajectory control, and smoothing algorithms.
+
+- `bumperbot_description`
   - Purpose: Contains robot URDF/Xacro, visualization assets, and launch files for publishing the robot description.
   - Notes: Includes meshes, RViz configurations, and Gazebo/ignition launch helpers.
 
-- `bumperbot_msgs` (ament_cmake, rosidl)
+- `bumperbot_msgs`
   - Purpose: Defines the custom messages and actions used across the bumperbot system.
   - Notes: Message and action definitions are used by other packages in this workspace.
 
-- `bumperbot_cpp_examples` (ament_cmake)
+- `bumperbot_cpp_examples`
   - Purpose: Example C++ nodes and demos demonstrating rclcpp, actions, components, and TF usage with the robot.
   - Notes: Good reference for porting algorithms to C++ using ROS2 best practices.
 
-- `bumperbot_py_examples` (ament_python)
+- `bumperbot_py_examples`
   - Purpose: Example Python nodes and tutorials demonstrating rclpy usage, TF integration, and custom messages.
   - Notes: Contains small example nodes, tests and setup for Python packaging.
 
-- `bumperbot_utils` (ament_cmake)
+- `bumperbot_utils`
   - Purpose: Utility libraries, helper nodes, and tools shared across the bumperbot packages.
 
-- `bumperbot_planning` (ament_cmake)
+- `bumperbot_planning`
   - Purpose: Provides planning and trajectory generation nodes and utilities for high-level path planning and motion execution.
   - Notes: Implements planners and helper interfaces to integrate with controllers and navigation stacks.
 
-- `bumperbot_motion` (ament_cmake)
+- `bumperbot_motion`
   - Purpose: Motion layer utilities, trajectory followers, and controller interfaces for executing planned trajectories.
   - Notes: Bridges high-level planners with low-level controllers and includes helpers for smoothing and tracking trajectories.
 
