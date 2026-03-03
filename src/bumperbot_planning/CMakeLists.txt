@@ -23,8 +23,8 @@ include_directories(include)
 add_library(dijkstra_planner SHARED src/dijkstra_planner.cpp)
 ament_target_dependencies(dijkstra_planner rclcpp nav_msgs geometry_msgs tf2_ros nav2_core nav2_costmap_2d nav2_util pluginlib)
 
-add_executable(a_star_planner src/a_star_planner.cpp)
-ament_target_dependencies(a_star_planner rclcpp nav_msgs geometry_msgs tf2_ros)
+add_library(a_star_planner SHARED src/a_star_planner.cpp)
+ament_target_dependencies(a_star_planner rclcpp nav_msgs geometry_msgs tf2_ros nav2_core nav2_costmap_2d nav2_util pluginlib)
 
 pluginlib_export_plugin_description_file(nav2_core global_planner_plugins.xml)
 
@@ -40,12 +40,8 @@ install(
 )
 
 install(TARGETS
-  a_star_planner
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(TARGETS
   dijkstra_planner
+  a_star_planner
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
