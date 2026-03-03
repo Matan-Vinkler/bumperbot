@@ -2,6 +2,7 @@
 #define DIJKSTRA_PLANNER_HPP_
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 
 #include <tf2_ros/buffer.hpp>
 #include <tf2_ros/transform_listener.hpp>
@@ -9,6 +10,7 @@
 #include <nav2_core/global_planner.hpp>
 #include <nav2_util/lifecycle_node.hpp>
 #include <nav2_costmap_2d/costmap_2d_ros.hpp>
+#include <nav2_msgs/action/smooth_path.hpp>
 
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <nav_msgs/msg/path.hpp>
@@ -62,6 +64,8 @@ namespace bumperbot_planning
         nav2_util::LifecycleNode::SharedPtr node_;
         nav2_costmap_2d::Costmap2D* costmap_;
         std::string global_frame_, name_;
+
+        rclcpp_action::Client<nav2_msgs::action::SmoothPath>::SharedPtr smooth_client_;
 
         void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr map_msg);
         void goalCallback(const geometry_msgs::msg::PoseStamped& pose_msg);
