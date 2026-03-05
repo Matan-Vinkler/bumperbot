@@ -3,96 +3,94 @@
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+#include <nav2_util/node_utils.hpp>
+
 #include <algorithm>
 
 namespace bumperbot_motion
 {
-    PurePursuit::PurePursuit() : Node("pure_pursuit"), look_ahead_distance_(0.5), max_linear_velocity_(0.3), max_angular_velocity_(1.0)
+    void PurePursuit::configure(const rclcpp_lifecycle::LifecycleNode::WeakPtr& parent, std::string name, std::shared_ptr<tf2_ros::Buffer> tf, std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros)
     {
-        declare_parameter<double>("look_ahead_distance", look_ahead_distance_);
-        declare_parameter<double>("max_linear_velocity", max_linear_velocity_);
-        declare_parameter<double>("max_angular_velocity", max_angular_velocity_);
+        node_ = parent;
+        auto node = node_.lock();
 
-        look_ahead_distance_ = get_parameter("look_ahead_distance").as_double();
-        max_linear_velocity_ = get_parameter("max_linear_velocity").as_double();
-        max_angular_velocity_ = get_parameter("max_angular_velocity").as_double();
+        costmap_ros_ = costmap_ros;
+        tf_ = tf;
+        plugin_name_ = name;
+        logger_ = node->get_logger();
+        clock_ = node->get_clock();
 
-        path_sub_ = create_subscription<nav_msgs::msg::Path>("/a_star/path", 10, std::bind(&PurePursuit::pathCallback, this, std::placeholders::_1));
-        cmd_pub_ = create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
-        carrot_pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("/pure_pursuit/carrot", 10);
+        nav2_util::declare_parameter_if_not_declared(node, plugin_name_ + ".look_ahead_distance", rclcpp::ParameterValue(0.5));
+        nav2_util::declare_parameter_if_not_declared(node, plugin_name_ + ".max_linear_velocity", rclcpp::ParameterValue(0.3));
+        nav2_util::declare_parameter_if_not_declared(node, plugin_name_ + ".max_angular_velocity", rclcpp::ParameterValue(1.0));
 
-        timer_ = create_wall_timer(std::chrono::milliseconds(100), std::bind(&PurePursuit::controlLoop, this));
+        node->get_parameter(plugin_name_ + ".look_ahead_distance", look_ahead_distance_);
+        node->get_parameter(plugin_name_ + ".max_linear_velocity", max_linear_velocity_);
+        node->get_parameter(plugin_name_ + ".max_angular_velocity", max_angular_velocity_);
 
-        tf_buffer_ = std::make_unique<tf2_ros::Buffer>(get_clock());
-        tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+        carrot_pose_pub_ = node->create_publisher<geometry_msgs::msg::PoseStamped>("/pure_pursuit/carrot_pose", 10);
     }
 
-    void PurePursuit::pathCallback(const nav_msgs::msg::Path::SharedPtr path_msg)
+    void PurePursuit::cleanup()
     {
-        global_plan_ = path_msg;
+        RCLCPP_INFO(logger_, "Cleaning up plugin PurePursuit");
+        carrot_pose_pub_.reset();
     }
 
-    void PurePursuit::controlLoop()
+    void PurePursuit::activate()
     {
-        if((!global_plan_) || (global_plan_->poses.empty()))
+        RCLCPP_INFO(logger_, "Activating plugin PurePursuit");
+    }
+
+    void PurePursuit::deactivate()
+    {
+        RCLCPP_INFO(logger_, "Deactivating plugin PurePursuit");
+    }
+
+    void PurePursuit::setPlan(const nav_msgs::msg::Path& path)
+    {
+        global_plan_ = path;
+    }
+
+    void PurePursuit::setSpeedLimit(const double&, const bool&) {}
+
+    geometry_msgs::msg::TwistStamped PurePursuit::computeVelocityCommands(const geometry_msgs::msg::PoseStamped& robot_pose, const geometry_msgs::msg::Twist&, nav2_core::GoalChecker*)
+    {
+        geometry_msgs::msg::TwistStamped cmd_vel;
+        cmd_vel.header.frame_id = robot_pose.header.frame_id;
+
+        if(global_plan_.poses.empty())
         {
-            return;
+            return cmd_vel;
         }
         
-        geometry_msgs::msg::TransformStamped robot_transform_pose;
-        try
+        if(!transformPlan(robot_pose.header.frame_id))
         {
-            robot_transform_pose = tf_buffer_->lookupTransform("odom", "base_footprint", tf2::TimePointZero);
-        }
-        catch(tf2::LookupException& e)
-        {
-            RCLCPP_WARN_STREAM(get_logger(), "Could not transform: " << e.what());
-            return;
-        }
-        
-        if(!transformPlan(robot_transform_pose.header.frame_id))
-        {
-            RCLCPP_ERROR_STREAM(get_logger(), "Unable to transform plan in robot's frame");
-            return;
+            RCLCPP_ERROR_STREAM(logger_, "Unable to transform plan in robot's frame");
+            return cmd_vel;
         }
 
-        geometry_msgs::msg::PoseStamped robot_pose_stamped;
-        robot_pose_stamped.header.frame_id = robot_transform_pose.header.frame_id;
-        robot_pose_stamped.pose.position.x = robot_transform_pose.transform.translation.x;
-        robot_pose_stamped.pose.position.y = robot_transform_pose.transform.translation.y;
-        robot_pose_stamped.pose.orientation = robot_transform_pose.transform.rotation;
-
-        geometry_msgs::msg::PoseStamped carrot_pose_stamped = getCarrotPose(robot_pose_stamped);
-
-        double distance = get_poses_distance(carrot_pose_stamped, robot_pose_stamped);
-
-        if(distance <= 0.1)
-        {
-            RCLCPP_INFO(get_logger(), "Goal Reached!");
-            global_plan_->poses.clear();
-            return;
-        }
-
-        carrot_pose_pub_->publish(carrot_pose_stamped);
+        geometry_msgs::msg::PoseStamped carrot_pose = getCarrotPose(robot_pose);
+        carrot_pose_pub_->publish(carrot_pose);
 
         tf2::Transform robot_pose_tf, carrot_pose_tf;
-        tf2::fromMsg(robot_pose_stamped.pose, robot_pose_tf);
-        tf2::fromMsg(carrot_pose_stamped.pose, carrot_pose_tf);
+        tf2::fromMsg(robot_pose.pose, robot_pose_tf);
+        tf2::fromMsg(carrot_pose.pose, carrot_pose_tf);
 
         tf2::Transform carrot_robot_pose_tf = robot_pose_tf.inverse() * carrot_pose_tf;
-        tf2::toMsg(carrot_robot_pose_tf, carrot_pose_stamped.pose);
+        tf2::toMsg(carrot_robot_pose_tf, carrot_pose.pose);
 
-        double curvature = getCurvature(carrot_pose_stamped.pose);
+        double curvature = getCurvature(carrot_pose.pose);
 
-        geometry_msgs::msg::Twist cmd_vel;
-        cmd_vel.linear.x = max_linear_velocity_;
-        cmd_vel.angular.z = curvature * max_angular_velocity_;
-        cmd_pub_->publish(cmd_vel);
+        cmd_vel.twist.linear.x = max_linear_velocity_;
+        cmd_vel.twist.angular.z = curvature * max_angular_velocity_;
+        
+        return cmd_vel;
     }
 
     bool PurePursuit::transformPlan(const std::string& frame)
     {
-        if(global_plan_->header.frame_id == frame)
+        if(global_plan_.header.frame_id == frame)
         {
             return true;
         }
@@ -100,27 +98,27 @@ namespace bumperbot_motion
         geometry_msgs::msg::TransformStamped transform;
         try
         {
-            transform = tf_buffer_->lookupTransform(frame, global_plan_->header.frame_id, tf2::TimePointZero);
+            transform = tf_->lookupTransform(frame, global_plan_.header.frame_id, tf2::TimePointZero);
         }
         catch(tf2::LookupException& ex)
         {
-            RCLCPP_ERROR_STREAM(get_logger(), "Couldn't transform plan from " << global_plan_->header.frame_id << " to " << frame << ": " << ex.what());
+            RCLCPP_ERROR_STREAM(logger_, "Couldn't transform plan from " << global_plan_.header.frame_id << " to " << frame << ": " << ex.what());
             return false;
         }
 
-        for(auto& pose: global_plan_->poses)
+        for(auto& pose: global_plan_.poses)
         {
             tf2::doTransform(pose, pose, transform);
         }
 
-        global_plan_->header.frame_id = frame;
+        global_plan_.header.frame_id = frame;
         return true;
     }
 
     geometry_msgs::msg::PoseStamped PurePursuit::getCarrotPose(const geometry_msgs::msg::PoseStamped& robot_pose)
     {
-        auto carrot_pose = global_plan_->poses.back();
-        for(auto pose_it = global_plan_->poses.rbegin(); pose_it != global_plan_->poses.rend(); ++pose_it)
+        auto carrot_pose = global_plan_.poses.back();
+        for(auto pose_it = global_plan_.poses.rbegin(); pose_it != global_plan_.poses.rend(); ++pose_it)
         {
             double distance = get_poses_distance(*pose_it, robot_pose);
             if(distance > look_ahead_distance_)
@@ -157,14 +155,5 @@ namespace bumperbot_motion
     }
 }
 
-int main(int argc, char* argv[])
-{
-    rclcpp::init(argc, argv);
-
-    auto node = std::make_shared<bumperbot_motion::PurePursuit>();
-    rclcpp::spin(node);
-
-    rclcpp::shutdown();
-
-    return 0;
-}
+#include <pluginlib/class_list_macros.hpp>
+PLUGINLIB_EXPORT_CLASS(bumperbot_motion::PurePursuit, nav2_core::Controller);
