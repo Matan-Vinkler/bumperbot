@@ -43,9 +43,8 @@ Top-level `src/` contains the following packages:
   - Notes: Integrates with `robot_localization` and Nav2 lifecycle components where applicable.
 
 - `bumperbot_navigation`
-  - Purpose: Provides navigation stack for autonomous path planning and obstacle avoidance using Nav2.
-  - Notes: Includes costmap configuration, planners (Dijkstra and A*), trajectory control, and smoothing algorithms.
-
+  - Purpose: Implements the robot's high‑level navigation layer by wrapping and configuring a Nav2-based stack.
+  - Notes: Provides launch and configuration files that glue custom planner/motion plugins with Nav2 servers for autonomous path planning and obstacle avoidance.
 - `bumperbot_description`
   - Purpose: Contains robot URDF/Xacro, visualization assets, and launch files for publishing the robot description.
   - Notes: Includes meshes, RViz configurations, and Gazebo/ignition launch helpers.
