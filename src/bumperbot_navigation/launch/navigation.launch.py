@@ -52,7 +52,7 @@ def generate_launch_description():
         ]
     )
 
-    bt_xml_path = os.path.join(project_dir, "behavior_tree", "simple_navigation.xml")
+    bt_xml_path = os.path.join(project_dir, "behavior_tree", "bt_navigation.xml")
     nav2_bt_navigator = Node(
         package="nav2_bt_navigator",
         executable="bt_navigator",

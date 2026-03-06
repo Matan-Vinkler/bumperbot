@@ -2,9 +2,11 @@
 <root BTCPP_format="4"
       main_tree_to_execute="main">
   <BehaviorTree ID="main">
-    <Sequence>
-      <ComputePathToPose goal="{goal}" planner_id="GridBasedSMAC" path="{path}"/>
+    <PipelineSequence>
+      <RateController hz="1">
+        <ComputePathToPose goal="{goal}" planner_id="GridBasedSMAC" path="{path}"/>
+      </RateController>
       <FollowPath controller_id="RegulatedPurePursuit" path="{path}"/>
-    </Sequence>
+    </PipelineSequence>
   </BehaviorTree>
 </root>
