@@ -54,13 +54,20 @@ namespace bumperbot_motion
 
     void PurePursuit::setSpeedLimit(const double&, const bool&) {}
 
-    geometry_msgs::msg::TwistStamped PurePursuit::computeVelocityCommands(const geometry_msgs::msg::PoseStamped& robot_pose, const geometry_msgs::msg::Twist&, nav2_core::GoalChecker*)
+    geometry_msgs::msg::TwistStamped PurePursuit::computeVelocityCommands(const geometry_msgs::msg::PoseStamped& robot_pose, const geometry_msgs::msg::Twist& velocity, nav2_core::GoalChecker* goal_checker)
     {
         geometry_msgs::msg::TwistStamped cmd_vel;
         cmd_vel.header.frame_id = robot_pose.header.frame_id;
 
         if(global_plan_.poses.empty())
         {
+            return cmd_vel;
+        }
+
+        auto& goal_pose = global_plan_.poses.back();
+        if(goal_checker->isGoalReached(robot_pose.pose, goal_pose.pose, velocity))
+        {
+            RCLCPP_INFO(logger_, "Goal was reached!");
             return cmd_vel;
         }
         
