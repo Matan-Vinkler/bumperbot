@@ -3,8 +3,8 @@
       main_tree_to_execute="main">
   <BehaviorTree ID="main">
     <Sequence>
-      <ComputePathToPose goal="{goal}" planner_id="GridBasedFast" path="{path}"/>
-      <FollowPath controller_id="FollowPath" path="{path}"/>
+      <ComputePathToPose goal="{goal}" planner_id="GridBasedSMAC" path="{path}"/>
+      <FollowPath controller_id="RegulatedPurePursuit" path="{path}"/>
     </Sequence>
   </BehaviorTree>
 </root>
