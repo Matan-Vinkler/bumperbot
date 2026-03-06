@@ -17,7 +17,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
 
     project_dir = get_package_share_directory("bumperbot_navigation")
-    lifecycle_nodes = ["controller_server", "planner_server", "smoother_server"]
+    lifecycle_nodes = ["controller_server", "planner_server", "smoother_server", "bt_navigator"]
 
     nav2_controller_server = Node(
         package="nav2_controller",
@@ -52,6 +52,20 @@ def generate_launch_description():
         ]
     )
 
+    bt_xml_path = os.path.join(project_dir, "behavior_tree", "simple_navigation.xml")
+    nav2_bt_navigator = Node(
+        package="nav2_bt_navigator",
+        executable="bt_navigator",
+        name="bt_navigator",
+        output="screen",
+        parameters=[
+            os.path.join(project_dir, "config", "bt_navigator.yaml"),
+            {"use_sim_time": use_sim_time},
+            {"default_nav_to_pose_bt_xml": bt_xml_path},
+            {"default_nav_through_poses_bt_xml": bt_xml_path}
+        ]
+    )
+
     nav2_lifecycle_manager = Node(
         package="nav2_lifecycle_manager",
         executable="lifecycle_manager",
@@ -69,5 +83,6 @@ def generate_launch_description():
         nav2_controller_server,
         nav2_planner_server,
         nav2_smoother_server,
+        nav2_bt_navigator,
         nav2_lifecycle_manager
     ])
