@@ -63,40 +63,33 @@ def generate_launch_description():
         condition=IfCondition(use_slam)
     )
 
+    navigation = IncludeLaunchDescription(
+        os.path.join(
+            get_package_share_directory("bumperbot_navigation"),
+            "launch",
+            "navigation.launch.py"
+        )
+    )
+
     safety_stop = Node(
         package="bumperbot_utils",
         executable="safety_stop",
         output="screen"
     )
 
-    rviz_localization = Node(
+    rviz = Node(
         package="rviz2",
         executable="rviz2",
         arguments=["-d", os.path.join(
-            get_package_share_directory("bumperbot_localization"),
+            get_package_share_directory("nav2_bringup"),
             "rviz",
-            "global_localization.rviz"
+            "nav2_default_view.rviz"
         )],
         output="screen",
         parameters=[
             {"use_sim_time": True}
         ],
         condition=UnlessCondition(use_slam)
-    )
-
-    rviz_slam = Node(
-        package="rviz2",
-        executable="rviz2",
-        arguments=["-d", os.path.join(
-            get_package_share_directory("bumperbot_mapping"),
-            "rviz",
-            "slam.rviz"
-        )],
-        output="screen",
-        parameters=[
-            {"use_sim_time": True}
-        ],
-        condition=IfCondition(use_slam)
     )
 
     return LaunchDescription([
@@ -106,7 +99,7 @@ def generate_launch_description():
         joystick,
         localization,
         slam,
+        navigation,
         safety_stop,
-        rviz_localization,
-        rviz_slam
+        rviz
     ])
