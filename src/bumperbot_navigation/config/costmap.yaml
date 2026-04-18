@@ -29,8 +29,8 @@ costmap:
           marking: true
           clearing: true
           combination_method: 1
-          raytrane_max_range: 3.0
-          raytrane_min_range: 0.0
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0
 

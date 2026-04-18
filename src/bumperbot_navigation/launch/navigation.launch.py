@@ -72,7 +72,7 @@ def generate_launch_description():
         name="behavior_server",
         output="screen",
         parameters=[
-            os.path.join(project_dir, "config", "behavoir_server.yaml"),
+            os.path.join(project_dir, "config", "behavior_server.yaml"),
             {"use_sim_time": use_sim_time}
         ]
     )
