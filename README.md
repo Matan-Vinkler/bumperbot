@@ -22,6 +22,14 @@ source install/setup.bash
 ```bash
 ros2 launch bumperbot_bringup simulated_robot.launch.py world_name:=small_house
 ```
+- In RViz2, use the "Nav2 Goal" button to point a goal location on the map and watch bumperbot autonomously navigate there. See the [Navigation Demo](#navigation-demo) section below for a video example.
+
+## Navigation Demo
+
+<video width="640" height="400" controls>
+  <source src="assets/navigation-video.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## Project Structure
 
