@@ -33,6 +33,8 @@ ros2 launch bumperbot_bringup simulated_robot.launch.py world_name:=small_house
 
 <video src="assets/navigation-video.mp4" type="video/mp4" width="640" height="400" controls></video>
 
+[View demo](assets/navigation-video.mp4)
+
 ## Project Structure
 
 Top-level `src/` contains the following packages:
