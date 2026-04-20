@@ -10,6 +10,11 @@ This workspace contains the packages and resources for the "Bumperbot" mobile ro
 
 ## Quick Start
 
+- Clone the workspace and navigate to it:
+```bash
+git clone https://github.com/Matan-Vinkler/bumperbot.git bumperbot_ws
+cd bumperbot_ws
+```
 - Build the workspace:
 ```bash
 colcon build --executor sequential
@@ -26,10 +31,7 @@ ros2 launch bumperbot_bringup simulated_robot.launch.py world_name:=small_house
 
 ## Navigation Demo
 
-<video width="640" height="400" controls>
-  <source src="assets/navigation-video.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+<video src="assets/navigation-video.mp4" type="video/mp4" width="640" height="400" controls></video>
 
 ## Project Structure
 
