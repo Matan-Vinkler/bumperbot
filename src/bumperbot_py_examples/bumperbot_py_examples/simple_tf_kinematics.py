@@ -45,7 +45,7 @@ class SimpleTfKinematics(Node):
 
         self.static_tf_broadcaster_.sendTransform(self.static_transform_stamped_)
 
-        self.get_logger().info(f"Publising static transform between {self.static_transform_stamped_.header.frame_id} and {self.static_transform_stamped_.child_frame_id}")
+        self.get_logger().info(f"Publishing static transform between {self.static_transform_stamped_.header.frame_id} and {self.static_transform_stamped_.child_frame_id}")
 
         self.timer_ = self.create_timer(0.1, self.timerCallback)
 
@@ -86,7 +86,7 @@ class SimpleTfKinematics(Node):
         try:
             requested_transform = self.tf_buffer_.lookup_transform(req.frame_id, req.child_frame_id, rclpy.time.Time())
         except TransformException as e:
-            self.get_logger().error(f"A error occured while transforming: {str(e)}")
+            self.get_logger().error(f"An error occurred while transforming: {str(e)}")
             res.success = False
             return res
         

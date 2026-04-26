@@ -2,7 +2,7 @@ amcl:
   ros__parameters:
     use_sim_time: True
     base_frame_id: "base_footprint"
-    gloabl_frame_id: "map"
+    global_frame_id: "map"
     odom_frame_id: "odom"
     scan_topic: "scan"
     tf_broadcast: True
@@ -42,7 +42,7 @@ amcl:
 
     resample_interval: 1
     max_particles: 8000
-    min_particle: 2000
+    min_particles: 2000
     recovery_alpha_fast: 0.1
     recovery_alpha_slow: 0.1
     update_min_a: 0.2

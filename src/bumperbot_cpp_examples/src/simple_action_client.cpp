@@ -42,7 +42,7 @@ void bumperbot_cpp_examples::SimpleActionClient::goalCallback(const rclcpp_actio
     }
     else
     {
-        RCLCPP_INFO(get_logger(), "Goal was accpeted by the server!");
+        RCLCPP_INFO(get_logger(), "Goal was accepted by the server!");
     }
 }
 
@@ -74,7 +74,7 @@ void bumperbot_cpp_examples::SimpleActionClient::resultCallback(const rclcpp_act
         return;
     
     default:
-        RCLCPP_ERROR_STREAM(get_logger(), "Unkown result code: " << (int)result.code);
+        RCLCPP_ERROR_STREAM(get_logger(), "Unknown result code: " << (int)result.code);
         return;
     }
 

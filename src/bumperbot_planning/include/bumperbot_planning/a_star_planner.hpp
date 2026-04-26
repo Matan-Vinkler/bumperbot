@@ -25,14 +25,14 @@ namespace bumperbot_planning
         int x;
         int y;
         int cost;
-        int heruistic;
+        int heuristic;
         std::shared_ptr<GraphNode> prev;
 
-        GraphNode(int in_x = 0, int in_y = 0) : x(in_x), y(in_y), cost(0), heruistic(0) {}
+        GraphNode(int in_x = 0, int in_y = 0) : x(in_x), y(in_y), cost(0), heuristic(0) {}
 
         bool operator>(const GraphNode& other) const
         {
-            return cost + heruistic > other.cost + other.heruistic;
+            return cost + heuristic > other.cost + other.heuristic;
         }
 
         bool operator==(const GraphNode& other) const

@@ -47,7 +47,7 @@ namespace bumperbot_planning
 
         auto start_grid = world2Grid(start.pose);
         auto goal_grid = world2Grid(goal.pose);
-        start_grid.heruistic = manhattanDistance(start_grid, goal_grid);
+        start_grid.heuristic = manhattanDistance(start_grid, goal_grid);
         pending_nodes.push(start_grid);
 
         GraphNode active_node;
@@ -69,7 +69,7 @@ namespace bumperbot_planning
                 {
                     new_node.cost = active_node.cost + current_cost + 1;
                     new_node.prev = std::make_shared<GraphNode>(active_node);
-                    new_node.heruistic = manhattanDistance(new_node, goal_grid);
+                    new_node.heuristic = manhattanDistance(new_node, goal_grid);
 
                     pending_nodes.push(new_node);
                     visited_nodes.push_back(new_node);

@@ -78,7 +78,7 @@ class DijkstraPlanner(Node):
 
         path = self.plan(map_base_pose, pose_msg.pose)
         if path.poses:
-            self.get_logger().info("Shorted path found.")
+            self.get_logger().info("Shortest path found.")
             self.path_pub_.publish(path)
         else:
             self.get_logger().warn("No path found to the goal.")

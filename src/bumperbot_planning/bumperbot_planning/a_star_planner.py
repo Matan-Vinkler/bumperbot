@@ -13,15 +13,15 @@ from geometry_msgs.msg import PoseStamped, Pose
 from queue import PriorityQueue
 
 class GraphNode:
-    def __init__(self, x: int, y: int, cost = 0, heruistic: int = 0, prev: 'GraphNode' = None):
+    def __init__(self, x: int, y: int, cost = 0, heuristic: int = 0, prev: 'GraphNode' = None):
         self.x = x
         self.y = y
         self.cost = cost
-        self.heruistic = heruistic
+        self.heuristic = heuristic
         self.prev = prev
 
     def __lt__(self, other: 'GraphNode') -> bool:
-        return self.cost + self.heruistic < other.cost + other.heruistic
+        return self.cost + self.heuristic < other.cost + other.heuristic
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, GraphNode):
@@ -79,7 +79,7 @@ class AStarPlanner(Node):
 
         path = self.plan(map_base_pose, pose_msg.pose)
         if path.poses:
-            self.get_logger().info("Shorted path found.")
+            self.get_logger().info("Shortest path found.")
             self.path_pub_.publish(path)
         else:
             self.get_logger().warn("No path found to the goal.")
@@ -91,7 +91,7 @@ class AStarPlanner(Node):
 
         start_node = self.world_to_grid(start)
         goal_node = self.world_to_grid(goal)
-        start_node.heruistic = self.manhattan_distance(start_node, goal_node)
+        start_node.heuristic = self.manhattan_distance(start_node, goal_node)
         pending_nodes.put(start_node)
 
         while not pending_nodes.empty() and rclpy.ok():
@@ -105,7 +105,7 @@ class AStarPlanner(Node):
                 current_cost = self.map_.data[self.pose_to_cell(new_node)]
                 if new_node not in visited_nodes and self.pose_on_map(new_node) and 0 <= current_cost < 99:
                     new_node.cost = active_node.cost + current_cost + 1
-                    new_node.heruistic = self.manhattan_distance(new_node, goal_node)
+                    new_node.heuristic = self.manhattan_distance(new_node, goal_node)
                     new_node.prev = active_node
 
                     pending_nodes.put(new_node)

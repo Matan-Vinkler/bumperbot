@@ -34,12 +34,12 @@ SimpleQoSSub::SimpleQoSSub() : Node("simple_qos_sub"), qos_profile_sub_(10)
     if(durability == "volatile")
     {
         qos_profile_sub_.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-        RCLCPP_INFO(get_logger(), "[Durability] : Best Effort");
+        RCLCPP_INFO(get_logger(), "[Durability] : Volatile");
     }
     else if(durability == "transient_local")
     {
         qos_profile_sub_.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-        RCLCPP_INFO(get_logger(), "[Durability] : Reliable");
+        RCLCPP_INFO(get_logger(), "[Durability] : Transient Local");
     }
     else if(durability == "system_default")
     {

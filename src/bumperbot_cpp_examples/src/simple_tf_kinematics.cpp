@@ -81,7 +81,7 @@ void SimpleTfKinematics::getTransformCallback(const bumperbot_msgs::srv::GetTran
     }
     catch(const tf2::TransformException& e)
     {
-        RCLCPP_ERROR_STREAM(get_logger(), "An error occured while transforming: " << e.what());
+        RCLCPP_ERROR_STREAM(get_logger(), "An error occurred while transforming: " << e.what());
         res->success = false;
         return;
     }
