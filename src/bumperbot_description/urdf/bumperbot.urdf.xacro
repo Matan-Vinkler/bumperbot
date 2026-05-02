@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bumperbot">
+    
+    <!-- Load Simulated or Real Hardware Interfaces -->
+    <xacro:arg name="is_sim" default="true"/>
+
+    <!-- Start GZ or Ignition depending on ROS 2 Version -->
+    <xacro:arg name="is_ignition" default="true"/>
+    
     <!-- Include Gazebo Parameter -->
     <xacro:include filename="$(find bumperbot_description)/urdf/bumperbot_gazebo.xacro"></xacro:include>
 

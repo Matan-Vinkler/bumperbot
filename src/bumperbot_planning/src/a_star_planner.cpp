@@ -39,7 +39,11 @@ namespace bumperbot_planning
         RCLCPP_INFO(node_->get_logger(), "Deactivating %s of type AStarPlanner", name_.c_str());
     }
 
+#ifdef ROS_HUMBLE
     nav_msgs::msg::Path AStarPlanner::createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal)
+#else
+    nav_msgs::msg::Path AStarPlanner::createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal, std::function<bool()> cancel_checker)
+#endif
     {
         std::vector<std::pair<int, int>> explore_directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
         std::priority_queue<GraphNode, std::vector<GraphNode>, std::greater<GraphNode>> pending_nodes;

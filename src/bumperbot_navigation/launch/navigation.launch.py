@@ -16,8 +16,14 @@ def generate_launch_description():
     )
     use_sim_time = LaunchConfiguration("use_sim_time")
 
+    ros_distro = os.environ["ROS_DISTRO"]
+    is_humble = ros_distro == "humble"
+
     project_dir = get_package_share_directory("bumperbot_navigation")
     lifecycle_nodes = ["controller_server", "planner_server", "smoother_server", "bt_navigator", "behavior_server"]
+
+    planner_server_config = "planner_server.yaml" if is_humble else "planner_server_jazzy.yaml"
+    behavior_server_config = "behavior_server.yaml" if is_humble else "behavior_server_jazzy.yaml"
 
     nav2_controller_server = Node(
         package="nav2_controller",
@@ -36,7 +42,7 @@ def generate_launch_description():
         name="planner_server",
         output="screen",
         parameters=[
-            os.path.join(project_dir, "config", "planner_server.yaml"),
+            os.path.join(project_dir, "config", planner_server_config),
             {"use_sim_time": use_sim_time}
         ]
     )
@@ -72,7 +78,7 @@ def generate_launch_description():
         name="behavior_server",
         output="screen",
         parameters=[
-            os.path.join(project_dir, "config", "behavior_server.yaml"),
+            os.path.join(project_dir, "config", behavior_server_config),
             {"use_sim_time": use_sim_time}
         ]
     )

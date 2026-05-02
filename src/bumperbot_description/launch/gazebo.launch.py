@@ -14,6 +14,9 @@ from pathlib import Path
 def generate_launch_description():
     bumperbot_description_dir = get_package_share_directory("bumperbot_description")
 
+    ros_distro = os.environ["ROS_DISTRO"]
+    is_ignition = "True" if ros_distro == "humble" else "False"
+
     model_arg = DeclareLaunchArgument(
         name="model",
         default_value=os.path.join(bumperbot_description_dir, "urdf", "bumperbot.urdf.xacro"),
@@ -33,7 +36,9 @@ def generate_launch_description():
 
     robot_description = ParameterValue(Command([
         "xacro ", 
-        LaunchConfiguration("model")
+        LaunchConfiguration("model"),
+        " is_ignition:=",
+        is_ignition
     ]), 
     value_type=str)
 

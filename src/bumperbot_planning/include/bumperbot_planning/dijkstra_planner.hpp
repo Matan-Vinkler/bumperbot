@@ -57,7 +57,11 @@ namespace bumperbot_planning
         void activate() override;
         void deactivate() override;
 
+#ifdef ROS_HUMBLE
         nav_msgs::msg::Path createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal) override;
+#else
+        nav_msgs::msg::Path createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal, std::function<bool()> cancel_checker) override;
+#endif
 
     private:
         std::shared_ptr<tf2_ros::Buffer> tf_;
