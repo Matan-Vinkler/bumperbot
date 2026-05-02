@@ -18,7 +18,7 @@ This workspace contains the packages and resources for the "Bumperbot" mobile ro
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
-- [Running and Testing](#running-and-testing)
+- [Running](#running)
 - [Contributing](#contributing)
 - [Contact](#contact)
 
@@ -143,7 +143,7 @@ Top-level `src/` contains the following packages:
 | `bumperbot_planning` | Planning and trajectory generation nodes for high-level path planning | Integrates with controllers and navigation stacks |
 | `bumperbot_motion` | Motion layer utilities and trajectory followers | Bridges high-level planners with low-level controllers |
 
-## ▶️ Running and Testing
+## ▶️ Running
 
 ### 🌍 Simulation Worlds
 
@@ -172,15 +172,10 @@ Pass `world_name:=<world>` to the bringup launch file:
 - Run a specific launch file: `ros2 launch <package> <launchfile>`
 - Run C++ examples: `ros2 run bumperbot_cpp_examples <executable>`
 - Run Python examples: `ros2 run bumperbot_py_examples <node>`
-- Run all tests:
-```bash
-colcon test --executor sequential
-colcon test-result --verbose
-```
 
 ## 🤝 Contributing
 
-Open a branch, make small, well-scoped changes, and submit a PR. Include tests where practical and update this README when adding new top-level functionality.
+Open a branch, make small, well-scoped changes, and submit a PR. Update this README when adding new top-level functionality.
 
 ## 📬 Contact
 
