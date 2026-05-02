@@ -1,104 +1,184 @@
-# Bumperbot ROS2 Workspace
+# 🤖 Bumperbot ROS2 Workspace
+
+[![ROS 2 Humble](https://img.shields.io/badge/ROS%202-Humble-blue)](https://docs.ros.org/en/humble/)
+[![ROS 2 Jazzy](https://img.shields.io/badge/ROS%202-Jazzy-blue)](https://docs.ros.org/en/jazzy/)
+[![Ubuntu 22.04 | 24.04](https://img.shields.io/badge/Ubuntu-22.04%20%7C%2024.04-orange)](https://ubuntu.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE.md)
 
 This workspace contains the packages and resources for the "Bumperbot" mobile robot. It includes core bringup and control stacks, localization and mapping tools, message definitions, examples in C++ and Python, and shared utilities. This workspace is influenced by the series-courses **Self Driving and ROS 2 - Learn by Doing**, made by Antonio Brandi.
 
-## Link to Courses
+> **Note:** This workspace is currently simulation-focused. Real hardware support is under development.
+
+[![Bumperbot Navigation Demo](assets/navigation-video.gif)](assets/navigation-video.mp4)
+
+## 📋 Table of Contents
+
+- [Courses](#courses)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Running and Testing](#running-and-testing)
+- [Contributing](#contributing)
+- [Contact](#contact)
+
+## 🎓 Courses
 
 - [Odometry & Control](https://www.udemy.com/course/self-driving-and-ros-2-learn-by-doing-odometry-control)
 - [Map & Localization](https://www.udemy.com/course/self-driving-and-ros-2-learn-by-doing-map-localization)
 - [Plan & Navigation](https://www.udemy.com/course/self-driving-and-ros-2-learn-by-doing-plan-navigation)
 
-## Quick Start
+## 📦 Prerequisites
 
-- Clone the workspace and navigate to it:
+- Ubuntu 22.04 (Humble) or Ubuntu 24.04 (Jazzy)
+- ROS 2: [Humble](https://docs.ros.org/en/humble/Installation.html) or [Jazzy](https://docs.ros.org/en/jazzy/Installation.html)
+- Gazebo Classic (comes with `ros-humble-desktop`) or Gazebo Harmonic (comes with `ros-jazzy-desktop`)
+- Nav2: `sudo apt install ros-$ROS_DISTRO-navigation2 ros-$ROS_DISTRO-nav2-bringup`
+- ros2_control: `sudo apt install ros-$ROS_DISTRO-ros2-control ros-$ROS_DISTRO-ros2-controllers`
+- robot_localization: `sudo apt install ros-$ROS_DISTRO-robot-localization`
+- libserial: `sudo apt install libserial-dev`
+
+## 🚀 Quick Start
+
+1. Source the ROS 2 underlay (replace `humble` with `jazzy` if applicable):
+```bash
+source /opt/ros/$ROS_DISTRO/setup.bash
+```
+2. Clone the workspace and navigate to it:
 ```bash
 git clone https://github.com/Matan-Vinkler/bumperbot.git bumperbot_ws
 cd bumperbot_ws
 ```
-- Build the workspace:
+3. Build the workspace:
 ```bash
-colcon build --executor sequential
+colcon build --executor sequential  # sequential to avoid overloading the CPU/memory during build
 ```
-- Source the workspace (in a new shell):
+4. Source the workspace (in a new shell):
 ```bash
 source install/setup.bash
 ```
-- Run a bringup or controller launch, for example:
+5. Run a bringup or controller launch, for example:
 ```bash
 ros2 launch bumperbot_bringup simulated_robot.launch.py world_name:=small_house
 ```
-- In RViz2, use the "Nav2 Goal" button to point a goal location on the map and watch bumperbot autonomously navigate there. See the [Navigation Demo](#navigation-demo) section below for a video example.
+6. In RViz2, use the "Nav2 Goal" button to point a goal location on the map and watch bumperbot autonomously navigate there. See the GIF at the top of this page for a demo.
 
-## Navigation Demo
+> **Joystick:** A gamepad connected on `/dev/input/js0` is detected automatically — no extra launch step needed. Teleop is bundled into the main bringup.
 
-<video src="assets/navigation-video.mp4" type="video/mp4" width="640" height="400" controls></video>
+## 🏗️ Architecture
 
-[View demo](assets/navigation-video.mp4)
+The diagram below shows the main data flow between runtime subsystems.
 
-## Project Structure
+```mermaid
+flowchart LR
+    subgraph Input
+        JOY["Joystick"]
+        GOAL["Nav2 Goal (RViz2)"]
+    end
+
+    subgraph ctrl["Control — bumperbot_controller"]
+        TM["twist_mux"]
+        VC["Velocity Controller"]
+    end
+
+    subgraph sim["Simulation — bumperbot_description"]
+        GZ["Gazebo + ros2_control"]
+    end
+
+    subgraph loc["Localization — bumperbot_localization"]
+        EKF["EKF (robot_localization)"]
+        AMCL["AMCL"]
+    end
+
+    subgraph map["Mapping — bumperbot_mapping"]
+        SLAM["SLAM Toolbox"]
+    end
+
+    subgraph nav["Navigation — bumperbot_navigation"]
+        NAV["Nav2"]
+    end
+
+    SS["safety_stop — bumperbot_utils"]
+
+    JOY -->|joy_vel| TM
+    NAV -->|cmd_vel| TM
+    SS -->|stop| TM
+    TM --> VC
+    VC -->|wheel cmds| GZ
+    GZ -->|joint_states| VC
+    VC -->|/odom| EKF
+    GZ -->|/imu| EKF
+    GZ -->|/scan| AMCL
+    GZ -->|/scan| SS
+    GZ -.->|/scan| SLAM
+    EKF -->|filtered odom| AMCL
+    EKF -->|filtered odom| NAV
+    AMCL -->|/amcl_pose| NAV
+    SLAM -.->|/map| NAV
+    GOAL --> NAV
+```
+
+> Dashed lines (` -.-> `) are active only when `use_slam:=true`. In the default mode (`use_slam:=false`) AMCL localizes against a pre-built map instead.
+
+## 🗂️ Project Structure
 
 Top-level `src/` contains the following packages:
 
-- `bumperbot_bringup`
-  - Purpose: Launches and configures the core robot systems and launch files required to bring the robot up.
-  - Notes: Contains top-level launch files for simulation and bring-up.
+| Package | Purpose | Notes |
+|:---|:---|:---|
+| `bumperbot_bringup` | Top-level launch files for simulation and hardware bring-up | Entry point for most use cases |
+| `bumperbot_controller` | Controller implementations and joystick teleop integration | Provides both C++ and Python controllers with configuration files |
+| `bumperbot_mapping` | Mapping nodes and utilities for building and serving environment maps | |
+| `bumperbot_localization` | Localization and state-estimation nodes for accurate robot pose tracking | Integrates with `robot_localization` and Nav2 lifecycle components |
+| `bumperbot_navigation` | High-level navigation layer wrapping a Nav2-based stack | Configures custom planner/motion plugins with Nav2 servers |
+| `bumperbot_description` | Robot URDF/Xacro, meshes, and RViz/Gazebo launch helpers | |
+| `bumperbot_firmware` | Embedded firmware for the microcontroller and low-level hardware interfaces | Motor control, sensor interfacing, and hardware communication protocols |
+| `bumperbot_msgs` | Custom message and action definitions used across the workspace | |
+| `bumperbot_cpp_examples` | Example C++ nodes demonstrating rclcpp, actions, components, and TF | Good reference for ROS 2 C++ best practices |
+| `bumperbot_py_examples` | Example Python nodes demonstrating rclpy, TF, and custom messages | |
+| `bumperbot_utils` | Utility libraries and helper nodes shared across packages | |
+| `bumperbot_planning` | Planning and trajectory generation nodes for high-level path planning | Integrates with controllers and navigation stacks |
+| `bumperbot_motion` | Motion layer utilities and trajectory followers | Bridges high-level planners with low-level controllers |
 
-- `bumperbot_controller`
-  - Purpose: Contains controller implementations, launch files, and integration for running the robot's control stack.
-  - Notes: Provides both C++ and Python controllers, configuration files for controllers, and joystick teleop integration.
+## ▶️ Running and Testing
 
-- `bumperbot_mapping`
-  - Purpose: Provides mapping nodes and utilities for building and serving environment maps using the robot's sensors.
+### 🌍 Simulation Worlds
 
-- `bumperbot_localization`
-  - Purpose: Provides localization and state-estimation configuration and nodes for accurate robot pose tracking.
-  - Notes: Integrates with `robot_localization` and Nav2 lifecycle components where applicable.
+Pass `world_name:=<world>` to the bringup launch file:
 
-- `bumperbot_navigation`
-  - Purpose: Implements the robot's high‑level navigation layer by wrapping and configuring a Nav2-based stack.
-  - Notes: Provides launch and configuration files that glue custom planner/motion plugins with Nav2 servers for autonomous path planning and obstacle avoidance.
-- `bumperbot_description`
-  - Purpose: Contains robot URDF/Xacro, visualization assets, and launch files for publishing the robot description.
-  - Notes: Includes meshes, RViz configurations, and Gazebo/ignition launch helpers.
+| `world_name` | Description |
+|:---|:---|
+| `empty` | Empty flat world |
+| `small_house` | Indoor house environment |
+| `small_warehouse` | Industrial warehouse environment |
 
-- `bumperbot_firmware`
-  - Purpose: Embedded firmware for the robot's microcontroller and low-level hardware interfaces.
-  - Notes: Contains firmware code for motor control, sensor interfacing, and hardware communication protocols.
+### ⚙️ Key Launch Arguments
 
-- `bumperbot_msgs`
-  - Purpose: Defines the custom messages and actions used across the bumperbot system.
-  - Notes: Message and action definitions are used by other packages in this workspace.
+| Argument | Default | Description |
+|:---|:---|:---|
+| `world_name` | `small_house` | Gazebo world to load (see table above) |
+| `use_slam` | `false` | `true` = build map with SLAM Toolbox; `false` = localize with AMCL |
+| `use_simple_controller` | `true` | Use the custom simple controller instead of the ros2_control diff-drive controller |
+| `use_python` | `false` | Use the Python controller implementation instead of C++ |
+| `wheel_radius` | `0.033` | Wheel radius in metres |
+| `wheel_separation` | `0.17` | Distance between wheels in metres |
 
-- `bumperbot_cpp_examples`
-  - Purpose: Example C++ nodes and demos demonstrating rclcpp, actions, components, and TF usage with the robot.
-  - Notes: Good reference for porting algorithms to C++ using ROS2 best practices.
+### 💻 Commands
 
-- `bumperbot_py_examples`
-  - Purpose: Example Python nodes and tutorials demonstrating rclpy usage, TF integration, and custom messages.
-  - Notes: Contains small example nodes, tests and setup for Python packaging.
+- Source the workspace before any `ros2` command: `source install/setup.bash`
+- Run a specific launch file: `ros2 launch <package> <launchfile>`
+- Run C++ examples: `ros2 run bumperbot_cpp_examples <executable>`
+- Run Python examples: `ros2 run bumperbot_py_examples <node>`
+- Run all tests:
+```bash
+colcon test --executor sequential
+colcon test-result --verbose
+```
 
-- `bumperbot_utils`
-  - Purpose: Utility libraries, helper nodes, and tools shared across the bumperbot packages.
+## 🤝 Contributing
 
-- `bumperbot_planning`
-  - Purpose: Provides planning and trajectory generation nodes and utilities for high-level path planning and motion execution.
-  - Notes: Implements planners and helper interfaces to integrate with controllers and navigation stacks.
+Open a branch, make small, well-scoped changes, and submit a PR. Include tests where practical and update this README when adding new top-level functionality.
 
-- `bumperbot_motion`
-  - Purpose: Motion layer utilities, trajectory followers, and controller interfaces for executing planned trajectories.
-  - Notes: Bridges high-level planners with low-level controllers and includes helpers for smoothing and tracking trajectories.
+## 📬 Contact
 
-## Running and Testing
-
-- To run a single package's launch file, source the workspace and call `ros2 launch <package> <launchfile>` as shown above.
-- To run examples:
-  - C++ examples (after building) can be launched or run via `ros2 run bumperbot_cpp_examples <executable>`.
-  - Python examples (after building) can be run via `ros2 run bumperbot_py_examples <node>`.
-
-## Contributing
-
-- Open a branch, make small, well-scoped changes, and submit a PR. Include tests where practical and update this README when adding new top-level functionality.
-
-## Contact
-
-- Maintainer: matan <matanvinkler@gmail.com>
+Maintainer: [matan](mailto:matanvinkler@gmail.com)
