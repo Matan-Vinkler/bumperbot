@@ -71,14 +71,16 @@ The diagram below shows the main data flow between runtime subsystems.
 
 ```mermaid
 flowchart LR
-    subgraph Input
+    subgraph input["Input"]
         JOY["Joystick"]
         GOAL["Nav2 Goal (RViz2)"]
     end
 
     subgraph ctrl["Control — bumperbot_controller"]
+        JT["joy_teleop"]
         TM["twist_mux"]
-        VC["Velocity Controller"]
+        TR["twist_relay"]
+        DC["DiffDrive Controller"]
     end
 
     subgraph sim["Simulation — bumperbot_description"]
@@ -86,7 +88,7 @@ flowchart LR
     end
 
     subgraph loc["Localization — bumperbot_localization"]
-        EKF["EKF (robot_localization)"]
+        MS["map_server"]
         AMCL["AMCL"]
     end
 
@@ -100,25 +102,26 @@ flowchart LR
 
     SS["safety_stop — bumperbot_utils"]
 
-    JOY -->|joy_vel| TM
-    NAV -->|cmd_vel| TM
-    SS -->|stop| TM
-    TM --> VC
-    VC -->|wheel cmds| GZ
-    GZ -->|joint_states| VC
-    VC -->|/odom| EKF
-    GZ -->|/imu| EKF
+    JOY -->|/joy| JT
+    JT -->|joy_vel| TM
+    NAV -->|/cmd_vel| TM
+    SS -->|turbo lock| TM
+    TM -->|cmd_vel_unstamped| TR
+    TR -->|/bumperbot_controller/cmd_vel| DC
+    DC -->|wheel cmds| GZ
+    GZ -->|joint_states| DC
+    DC -->|/odom| NAV
     GZ -->|/scan| AMCL
     GZ -->|/scan| SS
     GZ -.->|/scan| SLAM
-    EKF -->|filtered odom| AMCL
-    EKF -->|filtered odom| NAV
+    MS -->|/map| AMCL
+    MS -->|/map| NAV
     AMCL -->|/amcl_pose| NAV
     SLAM -.->|/map| NAV
     GOAL --> NAV
 ```
 
-> Dashed lines (` -.-> `) are active only when `use_slam:=true`. In the default mode (`use_slam:=false`) AMCL localizes against a pre-built map instead.
+> Dashed lines (`-.->`) are active only when `use_slam:=true`. In the default mode (`use_slam:=false`), `map_server` serves a pre-built map and AMCL localizes against it.
 
 ## 🗂️ Project Structure
 
