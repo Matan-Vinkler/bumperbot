@@ -12,7 +12,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(SERIAL libserial)
+pkg_check_modules(SERIAL REQUIRED libserial)
 
 ament_python_install_package(${PROJECT_NAME})
 
