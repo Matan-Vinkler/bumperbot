@@ -22,8 +22,8 @@ def generate_launch_description():
     project_dir = get_package_share_directory("bumperbot_navigation")
     lifecycle_nodes = ["controller_server", "planner_server", "smoother_server", "bt_navigator", "behavior_server"]
 
-    planner_server_config = "planner_server.yaml" if is_humble else "planner_server_jazzy.yaml"
-    behavior_server_config = "behavior_server.yaml" if is_humble else "behavior_server_jazzy.yaml"
+    planner_server_config = "planner_server_humble.yaml" if is_humble else "planner_server_jazzy.yaml"
+    behavior_server_config = "behavior_server_humble.yaml" if is_humble else "behavior_server_jazzy.yaml"
 
     nav2_controller_server = Node(
         package="nav2_controller",
