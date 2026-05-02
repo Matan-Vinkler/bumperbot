@@ -13,14 +13,14 @@ This workspace contains the packages and resources for the "Bumperbot" mobile ro
 
 ## 📋 Table of Contents
 
-- [Courses](#courses)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Running](#running)
-- [Contributing](#contributing)
-- [Contact](#contact)
+- [Courses](#-courses)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+- [Architecture](#️-architecture)
+- [Project Structure](#️-project-structure)
+- [Running](#️-running)
+- [Contributing](#-contributing)
+- [Contact](#-contact)
 
 ## 🎓 Courses
 
