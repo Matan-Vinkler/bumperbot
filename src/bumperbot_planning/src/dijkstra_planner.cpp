@@ -42,7 +42,7 @@ namespace bumperbot_planning
 #ifdef ROS_HUMBLE
     nav_msgs::msg::Path DijkstraPlanner::createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal)
 #else
-    nav_msgs::msg::Path DijkstraPlanner::createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal, std::function<bool()> cancel_checker)
+    nav_msgs::msg::Path DijkstraPlanner::createPlan(const geometry_msgs::msg::PoseStamped& start, const geometry_msgs::msg::PoseStamped& goal, std::function<bool()>)
 #endif
     {
         std::vector<std::pair<int, int>> explore_directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
