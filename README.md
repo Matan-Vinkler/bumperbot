@@ -61,6 +61,10 @@ Top-level `src/` contains the following packages:
   - Purpose: Contains robot URDF/Xacro, visualization assets, and launch files for publishing the robot description.
   - Notes: Includes meshes, RViz configurations, and Gazebo/ignition launch helpers.
 
+- `bumperbot_firmware`
+  - Purpose: Embedded firmware for the robot's microcontroller and low-level hardware interfaces.
+  - Notes: Contains firmware code for motor control, sensor interfacing, and hardware communication protocols.
+
 - `bumperbot_msgs`
   - Purpose: Defines the custom messages and actions used across the bumperbot system.
   - Notes: Message and action definitions are used by other packages in this workspace.
