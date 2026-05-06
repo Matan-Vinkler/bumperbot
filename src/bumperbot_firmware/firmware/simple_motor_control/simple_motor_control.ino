@@ -20,6 +20,6 @@ void loop() {
     command = Serial.readString().toDouble();
   }
 
-  int pwm = (int)(fabs(command) * 100);
+  int pwm = (int)(fabs(command) * 255);
   analogWrite(L298N_EN_A, pwm);
 }
