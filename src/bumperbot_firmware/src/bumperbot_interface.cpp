@@ -25,9 +25,9 @@ namespace bumperbot_firmware
     {
         RCLCPP_INFO(rclcpp::get_logger("bumperbot_interface"), "Starting robot hardware...");
 
-        velocity_commands_ = {0.0, 0.0};
-        position_states_ = {0.0, 0.0};
-        velocity_states_ = {0.0, 0.0};
+        std::fill(velocity_commands_.begin(), velocity_commands_.end(), 0.0);
+        std::fill(position_states_.begin(), position_states_.end(), 0.0);
+        std::fill(velocity_states_.begin(), velocity_states_.end(), 0.0);
 
         try
         {
@@ -82,9 +82,9 @@ namespace bumperbot_firmware
             return CallbackReturn::FAILURE;
         }
 
-        velocity_commands_.reserve(info_.joints.size());
-        position_states_.reserve(info_.joints.size());
-        velocity_states_.reserve(info_.joints.size());
+        velocity_commands_.resize(info_.joints.size(), 0.0);
+        position_states_.resize(info_.joints.size(), 0.0);
+        velocity_states_.resize(info_.joints.size(), 0.0);
 
         last_run_ = rclcpp::Clock().now();
         
@@ -121,7 +121,14 @@ namespace bumperbot_firmware
             auto dt = (rclcpp::Clock().now() - last_run_).seconds();
 
             std::string msg;
-            arduino_.ReadLine(msg);
+            try
+            {
+                arduino_.ReadLine(msg, '\n', 10);
+            }
+            catch(const LibSerial::ReadTimeout&)
+            {
+                return hardware_interface::return_type::OK;
+            }
 
             std::stringstream ss(msg);
 
@@ -130,6 +137,7 @@ namespace bumperbot_firmware
 
             while (std::getline(ss, res, ','))
             {
+                if (res.size() < 2) continue;
                 multiplier = res.at(1) == 'p' ? 1 : -1;
                 if(res.at(0) == 'r')
                 {
@@ -178,7 +186,7 @@ namespace bumperbot_firmware
         }
 
         msg_stream << std::fixed << std::setprecision(2) << "r" << right_wheel_sign << compensate_zeros_right << std::abs(velocity_commands_.at(0)) <<
-            ",l" << left_wheel_sign << compensate_zeros_left << std::abs(velocity_commands_.at(1));
+            ",l" << left_wheel_sign << compensate_zeros_left << std::abs(velocity_commands_.at(1)) << ",";
 
         try
         {

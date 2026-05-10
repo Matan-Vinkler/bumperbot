@@ -23,8 +23,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
-            {"robot_description": robot_description,
-            "use_sim_time": False},
+            {"robot_description": robot_description},
             os.path.join(bumperbot_controller_dir, "config", "bumperbot_controllers.yaml")
         ]
     )
@@ -36,7 +35,6 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        robot_description,
         controller_manager,
         robot_state_publisher
     ])
