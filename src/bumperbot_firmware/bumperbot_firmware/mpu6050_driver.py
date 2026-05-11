@@ -59,8 +59,10 @@ class MPU6050Driver(Node):
             self.pub_.publish(self.imu_msg_)
         except OSError:
             self.is_connected_ = False
+            self.get_logger().warn("Connection ended...")
 
     def init_i2c(self):
+        self.get_logger().info("Attempting I2C connection with IMU...")
         try:
             self.bus_ = smbus.SMBus(1)
             self.bus_.write_byte_data(DEVICE_ADDRESS, SMPLRT_DIV, 7)
@@ -70,8 +72,10 @@ class MPU6050Driver(Node):
             self.bus_.write_byte_data(DEVICE_ADDRESS, INT_ENABLE, 1)
 
             self.is_connected_ = True
+            self.get_logger().info("Connected to IMU!")
         except OSError:
             self.is_connected_ = False
+            self.get_logger().error("Failed to connect to IMU.")
 
     def read_raw_data(self, addr: int):
         high = self.bus_.read_byte_data(DEVICE_ADDRESS, addr)
