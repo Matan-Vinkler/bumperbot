@@ -6,6 +6,8 @@ from launch_ros.actions import Node
 
 def noisy_controller_func(context, *args, **kwargs):
     use_sim_time = LaunchConfiguration("use_sim_time")
+    if context.perform_substitution(use_sim_time).lower() != 'true':
+        return []
     wheel_radius = float(LaunchConfiguration("wheel_radius").perform(context))
     wheel_separation = float(LaunchConfiguration("wheel_separation").perform(context))
     wheel_radius_error = float(LaunchConfiguration("wheel_radius_error").perform(context))
