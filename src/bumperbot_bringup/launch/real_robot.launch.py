@@ -56,7 +56,7 @@ def generate_launch_description():
 
     laser_driver = Node(
         package="rplidar_ros",
-        executable="rplidar_node",
+        executable="rplidar_composition",
         name="rplidar_node",
         parameters=[
             os.path.join(get_package_share_directory("bumperbot_bringup"), "config", "rplidar_a1.yaml")
