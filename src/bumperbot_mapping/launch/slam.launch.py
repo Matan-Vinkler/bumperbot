@@ -8,8 +8,6 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     lifecycle_nodes = ["map_saver_server"]
-    if os.environ["ROS_DISTRO"] != "humble":
-        lifecycle_nodes.append("slam_toolbox")
 
     use_sim_time_arg = DeclareLaunchArgument(
         "use_sim_time",
