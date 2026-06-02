@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
@@ -55,14 +55,35 @@ def generate_launch_description():
             {"node_names": lifecycle_nodes},
             {"use_sim_time": use_sim_time},
             {"autostart": True},
-            {"bond_timeout": 10.0}
         ]
     )
 
-    return LaunchDescription([
+    launch_items = [
         use_sim_time_arg,
         slam_config_arg,
         slam_toolbox,
         nav2_map_saver,
         nav2_lifecycle_manager
-    ])
+    ]
+
+    # On Jazzy, slam_toolbox is a lifecycle node that must be explicitly
+    # configured and activated. The nav2_lifecycle_manager times out waiting
+    # for the bond on RPi hardware, so we trigger the transitions manually.
+    if os.environ.get("ROS_DISTRO") != "humble":
+        launch_items.append(
+            TimerAction(
+                period=3.0,
+                actions=[
+                    ExecuteProcess(
+                        cmd=[
+                            "bash", "-c",
+                            "ros2 lifecycle set /slam_toolbox configure && "
+                            "ros2 lifecycle set /slam_toolbox activate"
+                        ],
+                        output="screen"
+                    )
+                ]
+            )
+        )
+
+    return LaunchDescription(launch_items)
