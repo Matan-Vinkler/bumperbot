@@ -88,9 +88,9 @@ def generate_launch_description():
         hardware_interface,
         controller,
         joystick,
-        imu_driver_node,
-        safety_stop,
-        laser_driver,
-        localization,
-        slam
+        #imu_driver_node,
+        #safety_stop,
+        #laser_driver,
+        #localization,
+        #slam
     ])
