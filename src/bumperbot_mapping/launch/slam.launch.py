@@ -77,6 +77,8 @@ def generate_launch_description():
                     ExecuteProcess(
                         cmd=[
                             "bash", "-c",
+                            "until ros2 lifecycle get /slam_toolbox > /dev/null 2>&1; "
+                            "do sleep 0.5; done && "
                             "ros2 lifecycle set /slam_toolbox configure && "
                             "ros2 lifecycle set /slam_toolbox activate"
                         ],
