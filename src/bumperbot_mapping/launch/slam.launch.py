@@ -22,6 +22,31 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     slam_config = LaunchConfiguration("slam_config")
 
+    imu_static_tf = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=["--x", "0", "--y", "0", "--z", "0.103",
+                   "--qx", "0", "--qy", "0", "--qz", "0", "--qw", "1",
+                   "--frame-id", "base_footprint", "--child-frame-id", "imu_link_ekf"]
+    )
+
+    imu_republisher = Node(
+        package="bumperbot_localization",
+        executable="imu_republisher",
+        output="screen"
+    )
+
+    robot_localization = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[
+            os.path.join(get_package_share_directory("bumperbot_localization"), "config", "ekf_real.yaml"),
+            {"use_sim_time": use_sim_time}
+        ]
+    )
+
     slam_toolbox = Node(
         package="slam_toolbox",
         executable="sync_slam_toolbox_node",
@@ -61,6 +86,9 @@ def generate_launch_description():
     launch_items = [
         use_sim_time_arg,
         slam_config_arg,
+        imu_static_tf,
+        imu_republisher,
+        robot_localization,
         slam_toolbox,
         nav2_map_saver,
         nav2_lifecycle_manager
