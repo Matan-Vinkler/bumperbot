@@ -24,7 +24,7 @@ void imuCallback(const sensor_msgs::msg::Imu& msg)
 
     // Angular velocity z variance (rad/s)^2 — conservative to reduce impact
     // of residual bias drift; IMU still corrects heading during fast turns
-    new_msg.angular_velocity_covariance[8] = 0.05;
+    new_msg.angular_velocity_covariance[8] = 0.1;
 
     imu_pub->publish(new_msg);
 }
