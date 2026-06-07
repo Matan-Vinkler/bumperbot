@@ -68,7 +68,7 @@ class MPU6050Driver(Node):
             self.bus_.write_byte_data(DEVICE_ADDRESS, SMPLRT_DIV, 7)
             self.bus_.write_byte_data(DEVICE_ADDRESS, PWR_MGMT_1, 1)
             self.bus_.write_byte_data(DEVICE_ADDRESS, CONFIG, 0)
-            self.bus_.write_byte_data(DEVICE_ADDRESS, GYRO_CONFIG, 24)
+            self.bus_.write_byte_data(DEVICE_ADDRESS, GYRO_CONFIG, 0)
             self.bus_.write_byte_data(DEVICE_ADDRESS, INT_ENABLE, 1)
 
             self.is_connected_ = True

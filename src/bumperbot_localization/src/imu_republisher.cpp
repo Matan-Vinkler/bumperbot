@@ -3,6 +3,9 @@
 
 using namespace std::chrono_literals;
 
+// Gyro z bias measured at rest (rad/s). Run calibration, then set this.
+static constexpr double GYRO_Z_BIAS = 0.0;
+
 rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub;
 
 void imuCallback(const sensor_msgs::msg::Imu& msg)
@@ -11,6 +14,16 @@ void imuCallback(const sensor_msgs::msg::Imu& msg)
     new_msg = msg;
 
     new_msg.header.frame_id = "imu_link_ekf";
+
+    new_msg.angular_velocity.z -= GYRO_Z_BIAS;
+
+    // Signal that orientation and linear acceleration are not available
+    new_msg.orientation_covariance[0] = -1.0;
+    new_msg.linear_acceleration_covariance[0] = -1.0;
+
+    // Angular velocity z variance (rad/s)^2 — tuned for MPU6050 at ±250 dps
+    new_msg.angular_velocity_covariance[8] = 0.01;
+
     imu_pub->publish(new_msg);
 }
 
