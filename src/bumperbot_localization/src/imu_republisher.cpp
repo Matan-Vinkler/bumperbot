@@ -22,8 +22,9 @@ void imuCallback(const sensor_msgs::msg::Imu& msg)
     new_msg.orientation_covariance[0] = -1.0;
     new_msg.linear_acceleration_covariance[0] = -1.0;
 
-    // Angular velocity z variance (rad/s)^2 — tuned for MPU6050 at ±250 dps
-    new_msg.angular_velocity_covariance[8] = 0.01;
+    // Angular velocity z variance (rad/s)^2 — conservative to reduce impact
+    // of residual bias drift; IMU still corrects heading during fast turns
+    new_msg.angular_velocity_covariance[8] = 0.05;
 
     imu_pub->publish(new_msg);
 }
