@@ -83,12 +83,27 @@ def generate_launch_description():
         ]
     )
 
+    # The EKF publishes the filtered odom→base_footprint TF. We must disable
+    # the diff_drive_controller's competing TF publish so base_footprint has
+    # only one parent in the TF tree (otherwise last-writer-wins at 100 Hz
+    # vs 15 Hz causes slam_toolbox to lose the odom→base_footprint chain).
+    disable_controller_tf = ExecuteProcess(
+        cmd=[
+            "bash", "-c",
+            "until ros2 param get /bumperbot_controller enable_odom_tf > /dev/null 2>&1; "
+            "do sleep 0.5; done && "
+            "ros2 param set /bumperbot_controller enable_odom_tf false"
+        ],
+        output="screen"
+    )
+
     launch_items = [
         use_sim_time_arg,
         slam_config_arg,
         imu_static_tf,
         imu_republisher,
         robot_localization,
+        disable_controller_tf,
         slam_toolbox,
         nav2_map_saver,
         nav2_lifecycle_manager
