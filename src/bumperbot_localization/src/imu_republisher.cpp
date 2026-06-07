@@ -4,7 +4,8 @@
 using namespace std::chrono_literals;
 
 // Gyro z bias measured at rest (rad/s). Run calibration, then set this.
-static constexpr double GYRO_Z_BIAS = 0.0;
+// Measured at rest with robot stationary (rad/s), ±250 dps range
+static constexpr double GYRO_Z_BIAS = 0.038;
 
 rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub;
 
