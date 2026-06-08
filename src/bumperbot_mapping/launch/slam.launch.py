@@ -19,8 +19,14 @@ def generate_launch_description():
         default_value=os.path.join(get_package_share_directory("bumperbot_mapping"), "config", "slam_toolbox.yaml")
     )
 
+    localization_config_arg = DeclareLaunchArgument(
+        "localization_config",
+        default_value=os.path.join(get_package_share_directory("bumperbot_localization"), "config", "ekf_real.yaml")
+    )
+
     use_sim_time = LaunchConfiguration("use_sim_time")
     slam_config = LaunchConfiguration("slam_config")
+    localization_config = LaunchConfiguration("localization_config")
 
     imu_static_tf = Node(
         package="tf2_ros",
@@ -42,7 +48,7 @@ def generate_launch_description():
         name="ekf_filter_node",
         output="screen",
         parameters=[
-            os.path.join(get_package_share_directory("bumperbot_localization"), "config", "ekf_real.yaml"),
+            localization_config,
             {"use_sim_time": use_sim_time}
         ]
     )
@@ -100,6 +106,7 @@ def generate_launch_description():
     launch_items = [
         use_sim_time_arg,
         slam_config_arg,
+        localization_config_arg,
         imu_static_tf,
         imu_republisher,
         robot_localization,
