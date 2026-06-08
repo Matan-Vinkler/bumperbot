@@ -19,39 +19,8 @@ def generate_launch_description():
         default_value=os.path.join(get_package_share_directory("bumperbot_mapping"), "config", "slam_toolbox.yaml")
     )
 
-    localization_config_arg = DeclareLaunchArgument(
-        "localization_config",
-        default_value=os.path.join(get_package_share_directory("bumperbot_localization"), "config", "ekf_real.yaml")
-    )
-
     use_sim_time = LaunchConfiguration("use_sim_time")
     slam_config = LaunchConfiguration("slam_config")
-    localization_config = LaunchConfiguration("localization_config")
-
-    imu_static_tf = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=["--x", "0", "--y", "0", "--z", "0.103",
-                   "--qx", "0", "--qy", "0", "--qz", "0", "--qw", "1",
-                   "--frame-id", "base_footprint", "--child-frame-id", "imu_link_ekf"]
-    )
-
-    imu_republisher = Node(
-        package="bumperbot_localization",
-        executable="imu_republisher",
-        output="screen"
-    )
-
-    robot_localization = Node(
-        package="robot_localization",
-        executable="ekf_node",
-        name="ekf_filter_node",
-        output="screen",
-        parameters=[
-            localization_config,
-            {"use_sim_time": use_sim_time}
-        ]
-    )
 
     slam_toolbox = Node(
         package="slam_toolbox",
@@ -89,28 +58,9 @@ def generate_launch_description():
         ]
     )
 
-    # The EKF publishes the filtered odom→base_footprint TF. We must disable
-    # the diff_drive_controller's competing TF publish so base_footprint has
-    # only one parent in the TF tree (otherwise last-writer-wins at 100 Hz
-    # vs 15 Hz causes slam_toolbox to lose the odom→base_footprint chain).
-    disable_controller_tf = ExecuteProcess(
-        cmd=[
-            "bash", "-c",
-            "until ros2 param get /bumperbot_controller enable_odom_tf > /dev/null 2>&1; "
-            "do sleep 0.5; done && "
-            "ros2 param set /bumperbot_controller enable_odom_tf false"
-        ],
-        output="screen"
-    )
-
     launch_items = [
         use_sim_time_arg,
         slam_config_arg,
-        localization_config_arg,
-        imu_static_tf,
-        imu_republisher,
-        robot_localization,
-        disable_controller_tf,
         slam_toolbox,
         nav2_map_saver,
         nav2_lifecycle_manager
