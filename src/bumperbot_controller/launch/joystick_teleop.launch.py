@@ -17,6 +17,12 @@ def generate_launch_description():
         description="Use simulated time"
     )
 
+    joy_teleop_config_arg = DeclareLaunchArgument(
+        name="joy_teleop_config",
+        default_value=os.path.join(bumperbot_controller_pkg, "config", "joy_teleop_real.yaml"),
+        description="Path to joy_teleop config file"
+    )
+
     joy_node = Node(
         package="joy",
         executable="joy_node",
@@ -31,7 +37,7 @@ def generate_launch_description():
         package="joy_teleop",
         executable="joy_teleop",
         parameters=[
-            os.path.join(bumperbot_controller_pkg, "config", "joy_teleop.yaml"),
+            LaunchConfiguration("joy_teleop_config"),
             {"use_sim_time": LaunchConfiguration("use_sim_time")}
         ]
     )
@@ -60,6 +66,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         use_sim_time_arg,
+        joy_teleop_config_arg,
         joy_node,
         joy_teleop,
         twist_mux_launch,

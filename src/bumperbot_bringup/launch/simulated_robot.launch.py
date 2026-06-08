@@ -41,7 +41,12 @@ def generate_launch_description():
             "joystick_teleop.launch.py"
         ),
         launch_arguments={
-            "use_sim_time": "True"
+            "use_sim_time": "True",
+            "joy_teleop_config": os.path.join(
+                get_package_share_directory("bumperbot_controller"),
+                "config",
+                "joy_teleop_sim.yaml"
+            )
         }.items()
     )
 
