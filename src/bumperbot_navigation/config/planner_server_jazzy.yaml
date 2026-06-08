@@ -35,7 +35,7 @@ global_costmap:
       global_frame: map
       robot_base_frame: base_link
       use_sim_time: true
-      robot_radius: 0.1
+      robot_radius: 0.12
       resolution: 0.05
       always_send_full_costmap: true
       track_unknown_space: true
@@ -65,5 +65,5 @@ global_costmap:
 
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        inflation_radius: 0.55
-        cost_scaling_factor: 3.0
+        inflation_radius: 0.75
+        cost_scaling_factor: 1.5
