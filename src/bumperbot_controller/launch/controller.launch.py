@@ -1,5 +1,6 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, GroupAction, OpaqueFunction, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import Node
@@ -134,6 +135,13 @@ def generate_launch_description():
 
     noisy_controller_launch = OpaqueFunction(function=noisy_controller_func)
 
+    wheel_controller_spawner_delayed = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[wheel_controller_spawner, simple_controller]
+        )
+    )
+
     return LaunchDescription([
         use_sim_time_arg,
         use_python_arg,
@@ -143,7 +151,6 @@ def generate_launch_description():
         wheel_radius_error_arg,
         wheel_separation_error_arg,
         joint_state_broadcaster_spawner,
-        wheel_controller_spawner,
-        simple_controller,
+        wheel_controller_spawner_delayed,
         noisy_controller_launch
     ])
