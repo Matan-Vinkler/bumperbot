@@ -138,7 +138,7 @@ def generate_launch_description():
     wheel_controller_spawner_delayed = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=joint_state_broadcaster_spawner,
-            on_exit=[wheel_controller_spawner, simple_controller]
+            on_exit=[wheel_controller_spawner]
         )
     )
 
@@ -152,5 +152,6 @@ def generate_launch_description():
         wheel_separation_error_arg,
         joint_state_broadcaster_spawner,
         wheel_controller_spawner_delayed,
+        simple_controller,
         noisy_controller_launch
     ])
