@@ -27,6 +27,9 @@ ament_target_dependencies(trajectory_drawer rclcpp nav_msgs geometry_msgs)
 add_executable(safety_stop src/safety_stop.cpp)
 ament_target_dependencies(safety_stop rclcpp sensor_msgs std_msgs rclcpp_action twist_mux_msgs visualization_msgs)
 
+add_executable(joy_watchdog src/joy_watchdog.cpp)
+ament_target_dependencies(joy_watchdog rclcpp sensor_msgs std_msgs)
+
 install(PROGRAMS
   ${PROJECT_NAME}/trajectory_drawer.py
   ${PROJECT_NAME}/safety_stop.py
@@ -41,6 +44,7 @@ install(
 install(TARGETS
   trajectory_drawer
   safety_stop
+  joy_watchdog
   DESTINATION lib/${PROJECT_NAME}
 )
 

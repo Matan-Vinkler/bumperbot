@@ -58,6 +58,12 @@ def generate_launch_description():
         output="screen"
     )
 
+    joy_watchdog = Node(
+        package="bumperbot_utils",
+        executable="joy_watchdog",
+        output="screen"
+    )
+
     safety_stop = Node(
         package="bumperbot_utils",
         executable="safety_stop",
@@ -100,6 +106,7 @@ def generate_launch_description():
         joystick,
         imu_driver_node,
         laser_driver,
+        joy_watchdog,
         safety_stop,
         safety_stop_slam,
         localization,
