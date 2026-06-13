@@ -10,11 +10,13 @@ SafetyStop::SafetyStop() : Node("safety_stop"), state_(State::FREE), prev_state_
     declare_parameter<double>("warning_distance", 0.6);
     declare_parameter<std::string>("scan_topic", "scan");
     declare_parameter<std::string>("safety_stop_topic", "safety_stop");
+    declare_parameter<bool>("stop_on_danger", true);
 
     danger_distance_ = get_parameter("danger_distance").as_double();
     warning_distance_ = get_parameter("warning_distance").as_double();
     scan_topic_ = get_parameter("scan_topic").as_string();
     safety_stop_topic_ = get_parameter("safety_stop_topic").as_string();
+    stop_on_danger_ = get_parameter("stop_on_danger").as_bool();
 
     laser_sub_ = create_subscription<sensor_msgs::msg::LaserScan>(scan_topic_, 10, std::bind(&SafetyStop::laserCallback, this, _1));
     safety_stop_pub_ = create_publisher<std_msgs::msg::Bool>(safety_stop_topic_, 10);
@@ -88,9 +90,17 @@ void SafetyStop::laserCallback(const sensor_msgs::msg::LaserScan &msg)
         std_msgs::msg::Bool is_safety_stop;
         if (state_ == State::DANGER)
         {
-            is_safety_stop.data = true;
             zones_.markers.at(0).color.a = 1.0;
             zones_.markers.at(1).color.a = 1.0;
+            if (stop_on_danger_)
+            {
+                is_safety_stop.data = true;
+            }
+            else
+            {
+                is_safety_stop.data = false;
+                decrease_speed_client_->async_send_goal(JoyTurbo::Goal());
+            }
         }
         else if (state_ == State::FREE)
         {

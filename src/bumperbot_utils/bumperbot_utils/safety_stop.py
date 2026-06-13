@@ -25,11 +25,13 @@ class SafetyStop(Node):
         self.declare_parameter("warning_distance", 0.6)
         self.declare_parameter("scan_topic", "scan")
         self.declare_parameter("safety_stop_topic", "safety_stop")
+        self.declare_parameter("stop_on_danger", True)
 
         self.danger_distance_ = self.get_parameter("danger_distance").get_parameter_value().double_value
         self.warning_distance_ = self.get_parameter("warning_distance").get_parameter_value().double_value
         self.scan_topic_ = self.get_parameter("scan_topic").get_parameter_value().string_value
         self.safety_stop_topic_ = self.get_parameter("safety_stop_topic").get_parameter_value().string_value
+        self.stop_on_danger_ = self.get_parameter("stop_on_danger").get_parameter_value().bool_value
 
         self.laser_sub_ = self.create_subscription(LaserScan, self.scan_topic_, self.laserCallback, 10)
         self.safety_stop_pub_ = self.create_publisher(Bool, self.safety_stop_topic_, 10)
@@ -97,9 +99,13 @@ class SafetyStop(Node):
                 self.zones_.markers[1].color.a = 0.5
                 self.decrease_speed_client_.send_goal_async(JoyTurbo.Goal())
             elif self.state_ == State.DANGER:
-                is_safety_stop.data = True
                 self.zones_.markers[0].color.a = 1.0
                 self.zones_.markers[1].color.a = 1.0
+                if self.stop_on_danger_:
+                    is_safety_stop.data = True
+                else:
+                    is_safety_stop.data = False
+                    self.decrease_speed_client_.send_goal_async(JoyTurbo.Goal())
             elif self.state_ == State.FREE:
                 is_safety_stop.data = False
                 self.zones_.markers[0].color.a = 0.5

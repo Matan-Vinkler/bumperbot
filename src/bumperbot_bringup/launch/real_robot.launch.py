@@ -61,7 +61,17 @@ def generate_launch_description():
     safety_stop = Node(
         package="bumperbot_utils",
         executable="safety_stop",
-        output="screen"
+        output="screen",
+        parameters=[{"stop_on_danger": True}],
+        condition=UnlessCondition(use_slam)
+    )
+
+    safety_stop_slam = Node(
+        package="bumperbot_utils",
+        executable="safety_stop",
+        output="screen",
+        parameters=[{"stop_on_danger": False}],
+        condition=IfCondition(use_slam)
     )
 
     localization = IncludeLaunchDescription(
@@ -91,6 +101,7 @@ def generate_launch_description():
         imu_driver_node,
         laser_driver,
         safety_stop,
+        safety_stop_slam,
         localization,
         slam
     ])

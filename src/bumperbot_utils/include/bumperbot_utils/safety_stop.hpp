@@ -26,6 +26,7 @@ private:
     double warning_distance_;
     std::string scan_topic_;
     std::string safety_stop_topic_;
+    bool stop_on_danger_;
 
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr safety_stop_pub_;
