@@ -86,6 +86,7 @@ def generate_launch_description():
             "launch",
             "global.launch.py"
         ),
+        launch_arguments={"use_sim_time": "False"}.items(),
         condition=UnlessCondition(use_slam)
     )
 
