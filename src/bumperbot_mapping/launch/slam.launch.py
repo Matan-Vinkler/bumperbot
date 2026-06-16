@@ -72,14 +72,16 @@ def generate_launch_description():
     if os.environ.get("ROS_DISTRO") != "humble":
         launch_items.append(
             TimerAction(
-                period=3.0,
+                period=15.0,
                 actions=[
                     ExecuteProcess(
                         cmd=[
                             "bash", "-c",
                             "until ros2 lifecycle get /slam_toolbox 2>/dev/null | grep -q .; "
-                            "do sleep 0.5; done && "
+                            "do sleep 2; done && "
                             "ros2 lifecycle set /slam_toolbox configure && "
+                            "until ros2 lifecycle get /slam_toolbox 2>/dev/null | grep -q inactive; "
+                            "do sleep 2; done && "
                             "ros2 lifecycle set /slam_toolbox activate"
                         ],
                         output="screen"
