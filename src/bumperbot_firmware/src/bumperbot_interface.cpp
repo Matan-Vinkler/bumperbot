@@ -141,13 +141,13 @@ namespace bumperbot_firmware
                 multiplier = res.at(1) == 'p' ? 1 : -1;
                 if(res.at(0) == 'r')
                 {
-                    velocity_states_.at(1) = std::stod(res.substr(2, res.size())) * multiplier;
-                    position_states_.at(1) += velocity_states_.at(1) * dt;
+                    velocity_states_.at(0) = std::stod(res.substr(2, res.size())) * multiplier;
+                    position_states_.at(0) += velocity_states_.at(0) * dt;
                 }
                 if(res.at(0) == 'l')
                 {
-                    velocity_states_.at(0) = -std::stod(res.substr(2, res.size())) * multiplier;
-                    position_states_.at(0) += velocity_states_.at(0) * dt;
+                    velocity_states_.at(1) = -std::stod(res.substr(2, res.size())) * multiplier;
+                    position_states_.at(1) += velocity_states_.at(1) * dt;
                 }
             }
 
@@ -185,9 +185,8 @@ namespace bumperbot_firmware
             compensate_zeros_left = "";
         }
 
-        // 'r' channel is physically the left motor, 'l' channel is physically the right motor
-        msg_stream << std::fixed << std::setprecision(2) << "r" << left_wheel_sign << compensate_zeros_left << std::abs(velocity_commands_.at(1)) <<
-            ",l" << right_wheel_sign << compensate_zeros_right << std::abs(velocity_commands_.at(0)) << ",";
+        msg_stream << std::fixed << std::setprecision(2) << "r" << right_wheel_sign << compensate_zeros_right << std::abs(velocity_commands_.at(0)) <<
+            ",l" << left_wheel_sign << compensate_zeros_left << std::abs(velocity_commands_.at(1)) << ",";
 
         try
         {
