@@ -146,7 +146,7 @@ namespace bumperbot_firmware
                 }
                 if(res.at(0) == 'l')
                 {
-                    velocity_states_.at(0) = -std::stod(res.substr(2, res.size())) * multiplier;
+                    velocity_states_.at(0) = std::stod(res.substr(2, res.size())) * multiplier;
                     position_states_.at(0) += velocity_states_.at(0) * dt;
                 }
             }
