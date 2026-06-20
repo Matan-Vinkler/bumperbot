@@ -67,11 +67,11 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER_PHASE_A), rightEncoderCallback, RISING);
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER_PHASE_A), leftEncoderCallback, RISING);
 
-  digitalWrite(L298N_IN_1, HIGH);
-  digitalWrite(L298N_IN_2, LOW);
+  digitalWrite(L298N_IN_1, LOW);
+  digitalWrite(L298N_IN_2, HIGH);
 
-  digitalWrite(L298N_IN_3, HIGH);
-  digitalWrite(L298N_IN_4, LOW);
+  digitalWrite(L298N_IN_3, LOW);
+  digitalWrite(L298N_IN_4, HIGH);
 
   rightMotor.SetMode(AUTOMATIC);
   leftMotor.SetMode(AUTOMATIC);
