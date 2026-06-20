@@ -6,8 +6,8 @@
 #define L298N_IN_3 7
 #define L298N_IN_4 8
 
-double command_1 = 0.0;
-double command_2 = 0.0;
+double command_1 = 0.0; // Motor R
+double command_2 = 0.0; // Motor L
 
 void setup() {
   pinMode(L298N_EN_A, OUTPUT);

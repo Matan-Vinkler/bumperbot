@@ -1,12 +1,12 @@
 #include <PID_v1.h>
 
 #define L298N_EN_A 9
-#define L298N_IN_1 13
-#define L298N_IN_2 12
+#define L298N_IN_1 12
+#define L298N_IN_2 13
 
 #define L298N_EN_B 11
-#define L298N_IN_3 8
-#define L298N_IN_4 7
+#define L298N_IN_3 7
+#define L298N_IN_4 8
 
 #define RIGHT_ENCODER_PHASE_A 2
 #define RIGHT_ENCODER_PHASE_B 4
