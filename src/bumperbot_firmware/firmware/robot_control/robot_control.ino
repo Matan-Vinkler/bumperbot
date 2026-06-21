@@ -1,18 +1,22 @@
 #include <PID_v1.h>
 
+// Right wheel
+
 #define L298N_EN_A 9
 #define L298N_IN_1 12
 #define L298N_IN_2 13
+
+#define RIGHT_ENCODER_PHASE_A 3
+#define RIGHT_ENCODER_PHASE_B 5
+
+// Left-wheel
 
 #define L298N_EN_B 11
 #define L298N_IN_3 7
 #define L298N_IN_4 8
 
-#define RIGHT_ENCODER_PHASE_A 2
-#define RIGHT_ENCODER_PHASE_B 4
-
-#define LEFT_ENCODER_PHASE_A 3
-#define LEFT_ENCODER_PHASE_B 5
+#define LEFT_ENCODER_PHASE_A 2
+#define LEFT_ENCODER_PHASE_B 4
 
 unsigned int right_encoder_counter = 0;
 String right_encoder_sign = "p";
@@ -67,11 +71,11 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER_PHASE_A), rightEncoderCallback, RISING);
   attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER_PHASE_A), leftEncoderCallback, RISING);
 
-  digitalWrite(L298N_IN_1, LOW);
-  digitalWrite(L298N_IN_2, HIGH);
+  digitalWrite(L298N_IN_1, HIGH);
+  digitalWrite(L298N_IN_2, LOW);
 
-  digitalWrite(L298N_IN_3, LOW);
-  digitalWrite(L298N_IN_4, HIGH);
+  digitalWrite(L298N_IN_3, HIGH);
+  digitalWrite(L298N_IN_4, LOW);
 
   rightMotor.SetMode(AUTOMATIC);
   leftMotor.SetMode(AUTOMATIC);
