@@ -62,7 +62,11 @@ def generate_launch_description():
         package="bumperbot_utils",
         executable="safety_stop",
         output="screen",
-        parameters=[{"stop_on_danger": True}]
+        parameters=[
+            {"stop_on_danger": True},
+            {"danger_distance": 0.1},
+            {"warning_distance": 0.5}
+        ]
     )
 
     localization = IncludeLaunchDescription(
