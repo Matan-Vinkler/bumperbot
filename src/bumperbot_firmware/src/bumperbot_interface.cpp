@@ -141,12 +141,12 @@ namespace bumperbot_firmware
                 multiplier = res.at(1) == 'p' ? 1 : -1;
                 if(res.at(0) == 'r')
                 {
-                    velocity_states_.at(0) = std::stod(res.substr(2, res.size())) * multiplier;
+                    velocity_states_.at(0) = -std::stod(res.substr(2, res.size())) * multiplier;
                     position_states_.at(0) += velocity_states_.at(0) * dt;
                 }
                 if(res.at(0) == 'l')
                 {
-                    velocity_states_.at(1) = std::stod(res.substr(2, res.size())) * multiplier;
+                    velocity_states_.at(1) = -std::stod(res.substr(2, res.size())) * multiplier;
                     position_states_.at(1) += velocity_states_.at(1) * dt;
                 }
             }
