@@ -214,10 +214,10 @@ void leftEncoderCallback()
   left_encoder_counter++;
   if(digitalRead(LEFT_ENCODER_PHASE_B) == HIGH)
   {
-    left_encoder_sign = "p";
+    left_encoder_sign = "n";
   }
   else
   {
-    left_encoder_sign = "n";
+    left_encoder_sign = "p";
   }
 }
