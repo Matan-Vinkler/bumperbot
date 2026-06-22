@@ -7,7 +7,7 @@
 
 This workspace contains the packages and resources for the "Bumperbot" mobile robot. It includes core bringup and control stacks, localization and mapping tools, message definitions, examples in C++ and Python, and shared utilities. This workspace is influenced by the series-courses **Self Driving and ROS 2 - Learn by Doing**, made by Antonio Brandi.
 
-> **Note:** This workspace is currently simulation-focused. Real hardware support is under development.
+> **Note:** This workspace supports both Gazebo simulation and a physical differential-drive robot (Arduino + L298N motor driver, RPLiDAR A1, MPU6050 IMU). The real-hardware path is actively developed and tuned — see [Real Hardware](#-real-hardware) below.
 
 [![Bumperbot Navigation Demo](assets/navigation-video.gif)](assets/navigation-video.mp4)
 
@@ -19,6 +19,7 @@ This workspace contains the packages and resources for the "Bumperbot" mobile ro
 - [Architecture](#️-architecture)
 - [Project Structure](#️-project-structure)
 - [Running](#️-running)
+- [Real Hardware](#-real-hardware)
 - [Contributing](#-contributing)
 - [Contact](#-contact)
 
@@ -37,6 +38,7 @@ This workspace contains the packages and resources for the "Bumperbot" mobile ro
 - ros2_control: `sudo apt install ros-$ROS_DISTRO-ros2-control ros-$ROS_DISTRO-ros2-controllers`
 - robot_localization: `sudo apt install ros-$ROS_DISTRO-robot-localization`
 - libserial: `sudo apt install libserial-dev`
+- rplidar_ros (real hardware only): `sudo apt install ros-$ROS_DISTRO-rplidar-ros`
 
 ## 🚀 Quick Start
 
@@ -159,10 +161,8 @@ Pass `world_name:=<world>` to the bringup launch file:
 
 | Argument | Default | Description |
 |:---|:---|:---|
-| `world_name` | `small_house` | Gazebo world to load (see table above) |
+| `world_name` | `empty` | Gazebo world to load (see table above) |
 | `use_slam` | `false` | `true` = build map with SLAM Toolbox; `false` = localize with AMCL |
-| `use_simple_controller` | `true` | Use the custom simple controller instead of the ros2_control diff-drive controller |
-| `use_python` | `false` | Use the Python controller implementation instead of C++ |
 | `wheel_radius` | `0.033` | Wheel radius in metres |
 | `wheel_separation` | `0.17` | Distance between wheels in metres |
 
@@ -172,6 +172,35 @@ Pass `world_name:=<world>` to the bringup launch file:
 - Run a specific launch file: `ros2 launch <package> <launchfile>`
 - Run C++ examples: `ros2 run bumperbot_cpp_examples <executable>`
 - Run Python examples: `ros2 run bumperbot_py_examples <node>`
+
+## 🔧 Real Hardware
+
+Bumperbot also runs on a physical differential-drive base. The stack is launched the same way as simulation, just with `real_robot.launch.py` instead of `simulated_robot.launch.py`:
+
+```bash
+source install/setup.bash
+ros2 launch bumperbot_bringup real_robot.launch.py use_slam:=false
+```
+
+`use_slam` is the only launch argument — `wheel_radius`/`wheel_separation` come from `bumperbot_controllers.yaml`, and the controller/IMU/lidar/safety topology is fixed (no simple-controller or Python-controller switch on this path).
+
+### Required hardware
+
+| Component | Role | Interface |
+|:---|:---|:---|
+| Raspberry Pi 4/5 | Onboard computer running this ROS 2 workspace | N/A (host machine) |
+| Arduino (running `robot_control.ino` from `bumperbot_firmware/firmware`) | Motor PWM/direction output and encoder reading, talks to `BumperbotInterface` (ros2_control hardware plugin) | Serial over `/dev/arduino` |
+| L298N dual H-bridge | Drives the two drive motors | Wired to the Arduino's PWM/direction pins |
+| RPLiDAR A1 | 2D laser scan for AMCL/SLAM/`safety_stop` | Serial over `/dev/rplidar`, configured in `bumperbot_bringup/config/rplidar_a1.yaml` |
+| MPU6050 | IMU for `robot_localization` EKF fusion | I2C, read by `mpu6050_driver.py` |
+
+> `/dev/arduino` and `/dev/rplidar` are stable device names expected by the xacro/config files — set up udev rules that symlink your actual `/dev/ttyUSB*`/`/dev/ttyACM*` ports to those names, or edit `bumperbot_ros2_control.xacro` and `rplidar_a1.yaml` to point at your real device paths.
+
+For the full bill of materials, wiring diagrams, and assembly steps, see [HARDWARE.md](HARDWARE.md).
+
+### Safety stop
+
+`safety_stop` (package `bumperbot_utils`) watches the laser scan and publishes `/safety_stop`, which `twist_mux` treats as a priority-255 lock — when it latches `true`, every `cmd_vel` source (joystick, Nav2, recovery behaviors) is cut until it clears. On `real_robot.launch.py` it runs with `stop_on_danger: true`, `danger_distance: 0.1`, `warning_distance: 0.5`: anything closer than 0.1 m hard-locks the robot, and the 0.1–0.5 m warning band slows it via the joystick's turbo action server. Tune these distances for your environment — too large a `danger_distance` can hard-lock the robot in tight spaces (including during Nav2 recovery behaviors).
 
 ## 🤝 Contributing
 
