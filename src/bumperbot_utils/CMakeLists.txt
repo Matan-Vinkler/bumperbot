@@ -33,6 +33,7 @@ ament_target_dependencies(joy_watchdog rclcpp sensor_msgs std_msgs)
 install(PROGRAMS
   ${PROJECT_NAME}/trajectory_drawer.py
   ${PROJECT_NAME}/safety_stop.py
+  ${PROJECT_NAME}/find_phantom2.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
