@@ -55,7 +55,6 @@ def generate_launch_description():
         parameters=[
             os.path.join(get_package_share_directory("bumperbot_bringup"), "config", "rplidar_a1.yaml")
         ],
-        remappings=[("scan", "scan_raw")],
         output="screen"
     )
 
