@@ -55,6 +55,17 @@ def generate_launch_description():
         parameters=[
             os.path.join(get_package_share_directory("bumperbot_bringup"), "config", "rplidar_a1.yaml")
         ],
+        remappings=[("scan", "scan_raw")],
+        output="screen"
+    )
+
+    laser_filter = Node(
+        package="laser_filters",
+        executable="scan_to_scan_filter_chain",
+        parameters=[
+            os.path.join(get_package_share_directory("bumperbot_bringup"), "config", "laser_filters.yaml")
+        ],
+        remappings=[("scan", "scan_raw"), ("scan_filtered", "scan")],
         output="screen"
     )
 
@@ -105,6 +116,7 @@ def generate_launch_description():
         joystick,
         imu_driver_node,
         laser_driver,
+        laser_filter,
         safety_stop,
         localization,
         slam,

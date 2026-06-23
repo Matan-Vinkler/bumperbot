@@ -1,0 +1,8 @@
+scan_to_scan_filter_chain:
+  ros__parameters:
+    filter1:
+      name: exclude_phantom_sector
+      type: laser_filters/LaserScanAngularBoundsFilterInPlace
+      params:
+        lower_angle: -1.75
+        upper_angle: -1.55
