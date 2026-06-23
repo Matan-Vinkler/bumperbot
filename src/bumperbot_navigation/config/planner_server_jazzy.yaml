@@ -63,6 +63,7 @@ global_costmap:
           raytrace_min_range: 0.0
           obstacle_max_range: 4.0
           obstacle_min_range: 0.0
+          observation_persistence: 0.5
 
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
