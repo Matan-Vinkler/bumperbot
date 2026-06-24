@@ -9,7 +9,9 @@ This workspace contains the packages and resources for the "Bumperbot" mobile ro
 
 > **Note:** This workspace supports both Gazebo simulation and a physical differential-drive robot (Arduino + L298N motor driver, RPLiDAR A1, MPU6050 IMU). The real-hardware path is actively developed and tuned — see [Real Hardware](#-real-hardware) below.
 
-[![Bumperbot Navigation Demo](assets/navigation-video.gif)](assets/navigation-video.mp4)
+[![Simulation Demo](assets/simulation-video.gif)](assets/simulation-video.mp4)
+
+[▶️ Watch the real robot demo](assets/real-robot-video.mp4)
 
 ## 📋 Table of Contents
 
