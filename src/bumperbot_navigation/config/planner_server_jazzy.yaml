@@ -59,9 +59,9 @@ global_costmap:
           marking: true
           clearing: true
           combination_method: 1
-          raytrace_max_range: 4.0
+          raytrace_max_range: 5.0
           raytrace_min_range: 0.0
-          obstacle_max_range: 3.0
+          obstacle_max_range: 4.0
           obstacle_min_range: 0.0
 
       inflation_layer:
