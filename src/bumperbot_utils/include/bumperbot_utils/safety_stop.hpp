@@ -10,9 +10,9 @@
 #include <visualization_msgs/msg/marker.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
-#include <string>
+#include "bumperbot_utils/safety_state.hpp"
 
-enum State { FREE, WARNING, DANGER };
+#include <string>
 
 using twist_mux_msgs::action::JoyTurbo;
 
