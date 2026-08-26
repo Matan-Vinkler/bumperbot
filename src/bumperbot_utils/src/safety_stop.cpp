@@ -1,7 +1,5 @@
 #include "bumperbot_utils/safety_stop.hpp"
 
-#include <math.h>
-
 using std::placeholders::_1;
 
 SafetyStop::SafetyStop() : Node("safety_stop"), state_(State::FREE), prev_state_(State::FREE), is_first_msg_(true)
@@ -70,19 +68,7 @@ SafetyStop::SafetyStop() : Node("safety_stop"), state_(State::FREE), prev_state_
 
 void SafetyStop::laserCallback(const sensor_msgs::msg::LaserScan &msg)
 {
-    state_ = State::FREE;
-    for (const float &range_value : msg.ranges)
-    {
-        if (!std::isinf(range_value) && range_value <= warning_distance_)
-        {
-            state_ = State::WARNING;
-            if (range_value <= danger_distance_)
-            {
-                state_ = State::DANGER;
-                break;
-            }
-        }
-    }
+    state_ = classifySafetyState(msg.ranges, danger_distance_, warning_distance_);
 
     if (state_ != prev_state_)
     {

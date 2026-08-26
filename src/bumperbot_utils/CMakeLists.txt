@@ -21,11 +21,14 @@ ament_python_install_package(${PROJECT_NAME})
 
 include_directories(include)
 
+add_library(safety_state STATIC src/safety_state.cpp)
+
 add_executable(trajectory_drawer src/trajectory_drawer.cpp)
 ament_target_dependencies(trajectory_drawer rclcpp nav_msgs geometry_msgs)
 
 add_executable(safety_stop src/safety_stop.cpp)
 ament_target_dependencies(safety_stop rclcpp sensor_msgs std_msgs rclcpp_action twist_mux_msgs visualization_msgs)
+target_link_libraries(safety_stop safety_state)
 
 add_executable(joy_watchdog src/joy_watchdog.cpp)
 ament_target_dependencies(joy_watchdog rclcpp sensor_msgs std_msgs)
@@ -51,9 +54,13 @@ install(TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
   set(ament_cmake_copyright_FOUND TRUE)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
+
+  ament_add_gtest(test_safety_state test/test_safety_state.cpp)
+  target_link_libraries(test_safety_state safety_state)
 endif()
 
 ament_package()
